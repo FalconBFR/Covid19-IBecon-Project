@@ -10,5 +10,5 @@ Flask/Django Server, Undecided
 Java for Android App
 Swift for IOS app
 
-Advice from experts extreamly valued
+Advice from experts extremely valued
 
