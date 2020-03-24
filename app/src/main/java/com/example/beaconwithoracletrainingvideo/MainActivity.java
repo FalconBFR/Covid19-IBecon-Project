@@ -26,8 +26,8 @@ import java.util.Collection;
 public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private static final String TAG = "MainActivity";
 
-    private Button startButton; //no button created in gradle //todo: create button in gradle
-    private Button stopButton; //no button created in gradle //todo: create button in gradle
+    private Button startButton; 
+    private Button stopButton;
 
     private BeaconManager beaconManager = null;
     private Region beaconRegion = null;
@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         startButton = (Button)findViewById(R.id.startButton);
         stopButton = (Button)findViewById(R.id.stopButton);
-        startButton.setOnClickListener((v)->{startBeaconMonitoring();});//todo: green text
-        stopButton.setOnClickListener((v)->{stopBeaconMonitoring();});//todo: green text
+        startButton.setOnClickListener((v)->{startBeaconMonitoring();});
+        stopButton.setOnClickListener((v)->{stopBeaconMonitoring();});
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((ALTBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
