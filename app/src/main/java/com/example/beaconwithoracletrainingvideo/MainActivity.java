@@ -4,6 +4,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -26,7 +27,7 @@ import java.util.Collection;
 public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private static final String TAG = "MainActivity";
 
-    private Button startButton; 
+    private Button startButton;
     private Button stopButton;
 
     private BeaconManager beaconManager = null;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 View.OnClickListener
         });
     } */
-    private void ShowAlert(final String title, final String message){
+   /* private void ShowAlert(final String title, final String message){
         System.out.println("SHOW ALERT 47");
         runOnUiThread (new Thread(new Runnable() {
             public void run() {
@@ -59,7 +60,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 alertDialog.show();
             }
         }));
-    }
+    }*/
+   private void ShowAlert(final String title, final String message) {
+       runOnUiThread(() -> {
+           AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+           alertDialog.setTitle(title);
+           alertDialog.setMessage(message);
+           alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"OK", (DialogInterface.OnClickListener) (dialog, which)->{
+               dialog.dismiss();
+           });
+           alertDialog.show();
+       });
+   }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("APP STARTED");
@@ -91,23 +103,23 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             @Override
             public void didEnterRegion(Region region) {
                 System.out.println("DID ENTER REGION");
-                if (!entryMessageRaised) {
+                //if (!entryMessageRaised) {
                     //todo: change logic later
                     ShowAlert("did Enter Region", "Entering Region" + region.getUniqueId() +
                             "Beacon detected UUID/major/minor:" + region.getId1()+"/"+region.getId2()+"/"+region.getId3());
-                    entryMessageRaised = true;
-                }
+                    //entryMessageRaised = true;
+                //}
             }
 
             @Override
             public void didExitRegion(Region region) {
                 System.out.println("DID EXIT REGION");
-                if (!exitMessageRaised) {
+                //if (!exitMessageRaised) {
                     //todo: change logic later
                     ShowAlert("did Exit Region", "Exiting Region" + region.getUniqueId() +
                             "Beacon detected UUID/major/minor:" + region.getId1()+"/"+region.getId2()+"/"+region.getId3());
                     exitMessageRaised = true;
-                }
+                //}
             }
 
             @Override
@@ -116,27 +128,28 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
         });
 
-        beaconManager.setRangeNotifier(new RangeNotifier() {
+        /*beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 if(!rangingMessageRaised && beacons != null && !beacons.isEmpty()) {
                     for (Beacon beacon: beacons) {
-                        ShowAlert("didExitRegion", "Ranging region" + region.getUniqueId() +
+                        ShowAlert("didExitRangeRegion", "Ranging region" + region.getUniqueId() +
                                 " Beacon detected UUID/major/minor:" + beacon.getId1() + "/" +
                                 beacon.getId2() + "/" + beacon.getId3());
                     }
                     rangingMessageRaised = true;
                 }
             }
-        });
+        });*/
     }
 
     private void startBeaconMonitoring(){
         Log.d(TAG, "startBeaconMonitoring called");
         System.out.println("START BEACON MONITORING FUNCTION");
         try{
-            beaconRegion = new Region("MyBeacons", Identifier.parse("0AC59CA4-DFA6-442C-8C65-22247851344C"),
-                    Identifier.parse("4"),Identifier.parse("200"));
+            //beaconRegion = new Region("MyBeacons", Identifier.parse("0AC59CA4-DFA6-442C-8C65-22247851344C"),
+                   // Identifier.parse("4"),Identifier.parse("200"));
+            beaconRegion = new Region("MyBeaconStuff",null,null,null);
             beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
         } catch (RemoteException e) {
@@ -147,11 +160,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private void stopBeaconMonitoring(){
         System.out.println("Stop Beacon Monitoring");
         Log.d(TAG,"stopBeaconMonitoring called");
-        try{
+        /*try{
             beaconManager.stopMonitoringBeaconsInRegion(beaconRegion);
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
         } catch (RemoteException e) {
             e.printStackTrace();
-        }
+        } */
     }
 }
