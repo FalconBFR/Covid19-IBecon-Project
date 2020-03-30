@@ -6,11 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private Region beaconRegion = null;
 
     //self
-    private Beacon beaconreal;
+    private Identifier beaconid1; //beaconid1
 
     private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
 
@@ -94,6 +97,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((ALTBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
         beaconManager.bind(this);
 
+        //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+        //sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT, occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
+        //sqLiteDatabase.execSQL
     }
 
     private Boolean entryMessageRaised = false;
@@ -151,13 +157,16 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                         System.out.println("Here is your beacon");
                         System.out.println(beacon);
                         System.out.println("That was the beacon");
+                        Log.d(TAG,"writing to database");
+                        saveCloseContacts(beacon);
+                        Log.d(TAG,"writing to databse complete");
                         //public pubbeacon = beacon.getId1();
                         //getClass(beacon);
                         //Region beaconRegionactual = new Region("MyBeaconStuff", beacon.getId1(), beacon.getId2(), beacon.getId3());
                     //}
                         System.out.println(beacons.isEmpty());
                         rangingMessageRaised = true;
-                        beaconreal = beacon;
+                        //beaconreal = beacon;
                 //}
 
                 }
@@ -190,5 +199,40 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             e.printStackTrace();
         } */
     }
-    
+
+    public void saveCloseContacts(Beacon beacon){
+        SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+        //for testing purposes only
+        //
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
+        String tobeputinsql;
+        beaconid1 = beacon.getId1();
+        String beaconidstr = beaconid1.toString();
+        System.out.println(beaconidstr);
+        //System.out.println(beaconidstr.getClass());
+        //beaconid1 = toString(beaconid1);
+        String simpletest = "abc";
+
+        tobeputinsql = "INSERT INTO contacts VALUES('\''+ simpletest+'\'', 1);";
+        Log.d(TAG, "onCreate: sql is" + tobeputinsql);
+        sqLiteDatabase.execSQL(tobeputinsql);
+
+        //just for development purposes, to confirm it is written to the DB
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
+        if(query.moveToFirst()) { //means equals to true, no need to specify
+            do {
+                String name = query.getString(0);
+                int phone = query.getInt(1);
+                //String email = query.getString(2);
+                Toast.makeText(this, "BluetoothID =" + name + " occurrence " + phone, Toast.LENGTH_LONG).show();
+
+            } while(query.moveToNext());
+
+
+        }
+        query.close();
+        sqLiteDatabase.close();
+    }
+
 }
