@@ -22,6 +22,7 @@ import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
 import java.util.Collection;
+import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity implements BeaconConsumer {
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     private BeaconManager beaconManager = null;
     private Region beaconRegion = null;
+
+    //self
+    private Beacon beaconreal;
 
     private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
 
@@ -89,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((ALTBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
         beaconManager.bind(this);
+
     }
 
     private Boolean entryMessageRaised = false;
@@ -109,6 +114,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                             "Beacon detected UUID/major/minor:" + region.getId1()+"/"+region.getId2()+"/"+region.getId3());
                     //entryMessageRaised = true;
                 //}
+                //this is how you acess beacon  - System.out.println(beaconreal.getId1());
             }
 
             @Override
@@ -118,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                     //todo: change logic later
                     ShowAlert("did Exit Region", "Exiting Region" + region.getUniqueId() +
                             "Beacon detected UUID/major/minor:" + region.getId1()+"/"+region.getId2()+"/"+region.getId3());
+                //System.out.println(beaconRegion.getId1());
+                //System.out.println(beacon.get);
+                //System.out.println(beacon.getid1);
                     exitMessageRaised = true;
                 //}
             }
@@ -128,19 +137,33 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
         });
 
-        /*beaconManager.setRangeNotifier(new RangeNotifier() {
+        beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                if(!rangingMessageRaised && beacons != null && !beacons.isEmpty()) {
+                //if(!rangingMessageRaised && beacons != null && !beacons.isEmpty()) {
+                //if(!beacons.isEmpty()){
                     for (Beacon beacon: beacons) {
                         ShowAlert("didExitRangeRegion", "Ranging region" + region.getUniqueId() +
                                 " Beacon detected UUID/major/minor:" + beacon.getId1() + "/" +
                                 beacon.getId2() + "/" + beacon.getId3());
-                    }
-                    rangingMessageRaised = true;
+                        //pubbeacon = beacon;
+                        System.out.println(beacon.getId1());
+                        System.out.println("Here is your beacon");
+                        System.out.println(beacon);
+                        System.out.println("That was the beacon");
+                        //public pubbeacon = beacon.getId1();
+                        //getClass(beacon);
+                        //Region beaconRegionactual = new Region("MyBeaconStuff", beacon.getId1(), beacon.getId2(), beacon.getId3());
+                    //}
+                        System.out.println(beacons.isEmpty());
+                        rangingMessageRaised = true;
+                        beaconreal = beacon;
+                //}
+
                 }
+
             }
-        });*/
+        });
     }
 
     private void startBeaconMonitoring(){
@@ -167,4 +190,5 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             e.printStackTrace();
         } */
     }
+    
 }
