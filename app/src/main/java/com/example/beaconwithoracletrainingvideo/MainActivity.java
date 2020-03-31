@@ -31,24 +31,21 @@ import java.util.Objects;
 
 
 public class MainActivity extends AppCompatActivity implements BeaconConsumer {
+
+    //initialize
     private static final String TAG = "MainActivity";
 
     private Button startButton;
     private Button stopButton;
 
     private BeaconManager beaconManager = null;
-    private Region beaconRegion = null;
-
-    //self
-    private Identifier beaconid1; //beaconid1 //todo: remove
-
-    public int occurrence;
+    private Region beaconRegion = null; //monitoring region
 
     private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
+    //
 
-
-
-   private void ShowAlert(final String title, final String message) {
+    //main functions
+    private void ShowAlert(final String title, final String message) {
        runOnUiThread(() -> {
            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
            alertDialog.setTitle(title);
@@ -180,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } */
     }
 
-
+    //don't use, use saveCloseContacts2 instead
     public void saveCloseContacts(Beacon beacon){
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //for testing purposes only
@@ -191,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
         String tobeputinsql;
+        Identifier beaconid1; //beaconid1
         beaconid1 = beacon.getId1();
         String beaconidstr = beaconid1.toString();
         beaconidstr = "'"+ beaconidstr + "'";
@@ -219,10 +217,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     }
 
 
-
-
     public void saveclosecontacts2(Beacon beacon){
+        Identifier beaconid1; //beaconid1
+        int occurrence = 0; // initalize
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+
         //for testing purposes only
         //
         //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
@@ -240,8 +239,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         String bidnoquotes = beaconidstr;
         beaconidstr = "'"+ beaconidstr + "'";
 
-        //System.out.println(beaconidstr);
-
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
 
         //todo:need to add an array and counter/ dictionary type thing to bind occurence number with beaconid or things will be messed up.
@@ -251,48 +248,27 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             do {
                 String name = query.getString(0);
                 occurrence = query.getInt(1);
-                //occurrencedict.put("USA", "Washington DC");
-                //String email = query.getString(2);
                 Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
                         "BluetoothID =" + name + " occurrence " + occurrence, Toast.LENGTH_LONG).show();
 
             } while(query.moveToNext());
-
-
         }
-
         //saving values to DB
         //tobeputinsql = "INSERT OR IGNORE INTO contacts VALUES(" + beaconidstr + ", 0);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
         //sqLiteDatabase.execSQL(tobeputinsql);
         //tobeputinsql = "UPDATE contacts SET occurrence = occurrence + 1";
         //tobeputinsql = "UPDATE contacts SET occurrence = (occurrence + 50)";
                 //" WHERE beaconid = '0ac59ca4-dfa6-442c-8c65-22247851344c'";
-        int newoccurrence = occurrence;
-        newoccurrence = newoccurrence+1;
-        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + ");";
 
+        int newoccurrence = occurrence + 1;
+        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + ");";
         Log.d(TAG, "onCreate: sql is" + tobeputinsql);
         sqLiteDatabase.execSQL(tobeputinsql);
 
-        //just for development purposes, to confirm it is written to the DB
-        //Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-        if(query.moveToFirst()) { //means equals to true, no need to specify
-            do {
-                String name = query.getString(0);
-                int phone = query.getInt(1);
-                //String email = query.getString(2);
-                Toast.makeText(this, "SAVED TO DATABASE " +
-                        "BluetoothID =" + name + " occurrence " + phone, Toast.LENGTH_LONG).show();
-
-            } while(query.moveToNext());
-
-
-        }
-        //
+        //stopping query
         query.close();
         sqLiteDatabase.close();
 
-
     }
-
+    //
 }
