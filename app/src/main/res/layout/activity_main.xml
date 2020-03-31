@@ -36,9 +36,12 @@
         android:layout_marginEnd="26dp"
         android:layout_marginBottom="32dp"
         android:text="@string/textview"
+        android:textSize="16sp"
+        app:autoSizeTextType="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:lineHeight="30dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
