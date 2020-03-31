@@ -24,7 +24,9 @@ import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
 
+
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Objects;
 
 
@@ -38,38 +40,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private Region beaconRegion = null;
 
     //self
-    private Identifier beaconid1; //beaconid1
+    private Identifier beaconid1; //beaconid1 //todo: remove
 
     public int occurrence;
 
     private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
 
-    /*private void showAlert(final String title, final String message) {
-        runOnUiThread((){
-            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-            alertDialog.setTitle(title);
-            alertDialog.setMessage(message);
-            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"OK");
-                View.OnClickListener
-        });
-    } */
-   /* private void ShowAlert(final String title, final String message){
-        System.out.println("SHOW ALERT 47");
-        runOnUiThread (new Thread(new Runnable() {
-            public void run() {
-                AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-                alertDialog.setTitle(title);
-                alertDialog.setMessage(message);
-                alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                alertDialog.show();
-            }
-        }));
-    }*/
+
+
    private void ShowAlert(final String title, final String message) {
        runOnUiThread(() -> {
            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -217,11 +195,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         String beaconidstr = beaconid1.toString();
         beaconidstr = "'"+ beaconidstr + "'";
 
-        System.out.println(beaconidstr);
-        //System.out.println(beaconidstr.getClass());
-        //beaconid1 = toString(beaconid1);
-
-        String simpletest = "'abc'";
 
         tobeputinsql = "INSERT INTO contacts VALUES(" + beaconidstr + ", 1);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
         Log.d(TAG, "onCreate: sql is" + tobeputinsql);
@@ -245,6 +218,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         sqLiteDatabase.close();
     }
 
+
+
+
     public void saveclosecontacts2(Beacon beacon){
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //for testing purposes only
@@ -267,10 +243,15 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //System.out.println(beaconidstr);
 
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
+
+        //todo:need to add an array and counter/ dictionary type thing to bind occurence number with beaconid or things will be messed up.
+        //todo:issues when two beacons are together
+
         if(query.moveToFirst()) { //means equals to true, no need to specify
             do {
                 String name = query.getString(0);
                 occurrence = query.getInt(1);
+                //occurrencedict.put("USA", "Washington DC");
                 //String email = query.getString(2);
                 Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
                         "BluetoothID =" + name + " occurrence " + occurrence, Toast.LENGTH_LONG).show();
@@ -308,8 +289,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         }
         //
-        //query.close();
-        //sqLiteDatabase.close();
+        query.close();
+        sqLiteDatabase.close();
 
 
     }
