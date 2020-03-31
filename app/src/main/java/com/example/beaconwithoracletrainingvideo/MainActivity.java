@@ -200,21 +200,28 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } */
     }
 
+
     public void saveCloseContacts(Beacon beacon){
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //for testing purposes only
         //
         sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
+        //
+        //
+
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
         String tobeputinsql;
         beaconid1 = beacon.getId1();
         String beaconidstr = beaconid1.toString();
+        beaconidstr = "'"+ beaconidstr + "'";
+
         System.out.println(beaconidstr);
         //System.out.println(beaconidstr.getClass());
         //beaconid1 = toString(beaconid1);
-        String simpletest = "abc";
 
-        tobeputinsql = "INSERT INTO contacts VALUES('\''+ simpletest+'\'', 1);";
+        String simpletest = "'abc'";
+
+        tobeputinsql = "INSERT INTO contacts VALUES(" + beaconidstr + ", 1);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
         Log.d(TAG, "onCreate: sql is" + tobeputinsql);
         sqLiteDatabase.execSQL(tobeputinsql);
 
@@ -225,7 +232,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 String name = query.getString(0);
                 int phone = query.getInt(1);
                 //String email = query.getString(2);
-                Toast.makeText(this, "BluetoothID =" + name + " occurrence " + phone, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "SAVED TO DATABASE " +
+                        "BluetoothID =" + name + " occurrence " + phone, Toast.LENGTH_LONG).show();
 
             } while(query.moveToNext());
 
@@ -233,6 +241,27 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         }
         query.close();
         sqLiteDatabase.close();
+    }
+
+    public void saveclosecontacts2(Beacon beacon){
+        SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+        //for testing purposes only
+        //
+        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
+        //
+        //
+
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
+        String tobeputinsql;
+        beaconid1 = beacon.getId1();
+        String beaconidstr = beaconid1.toString();
+        System.out.println(beaconidstr); //for testing purposes
+
+        tobeputinsql = "INSERT INTO contacts VALUES('\''+ beaconid1+'\'', 1);";
+        Log.d(TAG, "onCreate: sql is" + tobeputinsql);
+        sqLiteDatabase.execSQL(tobeputinsql);
+
+
     }
 
 }
