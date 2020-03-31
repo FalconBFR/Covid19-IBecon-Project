@@ -27,6 +27,7 @@ import org.altbeacon.beacon.Region;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 
@@ -216,7 +217,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         sqLiteDatabase.close();
     }
 
-
     public void saveclosecontacts2(Beacon beacon){
         Identifier beaconid1; //beaconid1
         int occurrence = 0; // initalize
@@ -243,16 +243,27 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         //todo:need to add an array and counter/ dictionary type thing to bind occurence number with beaconid or things will be messed up.
         //todo:issues when two beacons are together
-
+        Map<String,Integer>occurrencedict = new HashMap<String,Integer>();
         if(query.moveToFirst()) { //means equals to true, no need to specify
             do {
-                String name = query.getString(0);
-                occurrence = query.getInt(1);
-                Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
-                        "BluetoothID =" + name + " occurrence " + occurrence, Toast.LENGTH_LONG).show();
-
+                String beaconid = query.getString(0);
+                System.out.println(beaconid);
+                System.out.println(bidnoquotes);
+                //System.out.println(beaconid == bidnoquotes);
+                //System.out.println( "0ac59ca4-dfa6-442c-8c65-22247851344c" == "0ac59ca4-dfa6-442c-8c65-22247851344c" );
+                //System.out.println(beaconid.equals(bidnoquotes));
+                //System.out.println(beaconid.equals(beaconidstr));
+                System.out.println("the above");
+                if(beaconid.equals(bidnoquotes)) {
+                    System.out.println("hereherehere");
+                    occurrence = query.getInt(1);
+                    occurrencedict.put(beaconid, occurrence);
+                    Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
+                            "BluetoothID =" + beaconid + " occurrence " + occurrence, Toast.LENGTH_LONG).show();
+                }
             } while(query.moveToNext());
         }
+
         //saving values to DB
         //tobeputinsql = "INSERT OR IGNORE INTO contacts VALUES(" + beaconidstr + ", 0);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
         //sqLiteDatabase.execSQL(tobeputinsql);
