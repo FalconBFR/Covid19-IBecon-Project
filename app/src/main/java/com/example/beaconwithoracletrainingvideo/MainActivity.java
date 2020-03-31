@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //
 
         sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
+        sqLiteDatabase.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_beaconid ON contacts(beaconid)");
 
         //declaring the variable 'tobeputinsql' as the variable to store the commands
         String tobeputinsql;
@@ -254,19 +255,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 String beaconid = query.getString(0);
                 System.out.println(beaconid);
                 System.out.println(bidnoquotes);
-                //System.out.println(beaconid == bidnoquotes);
-                //System.out.println( "0ac59ca4-dfa6-442c-8c65-22247851344c" == "0ac59ca4-dfa6-442c-8c65-22247851344c" );
-                //System.out.println(beaconid.equals(bidnoquotes));
-                //System.out.println(beaconid.equals(beaconidstr));
-                System.out.println("the above");
+
                 if(beaconid.equals(bidnoquotes)) {
-                    System.out.println("hereherehere");
                     occurrence = query.getInt(1);
                     //occurrencedict.put(beaconid, occurrence);
                     Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
                             "BluetoothID =" + beaconid + " occurrence " + occurrence, Toast.LENGTH_LONG).show();
-                    TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
-                    dbtextview.setText("BEFORE SAVED TO DATABASE " + "BluetoothID =" + beaconid + " occurrence " + occurrence);
                 }
             } while(query.moveToNext());
         }
@@ -287,6 +281,28 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         query.close();
         sqLiteDatabase.close();
 
+        loaddbview();
+
     }
     //
+
+    public void loaddbview(){
+        StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
+        SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
+        if(query.moveToFirst()) { //means equals to true, no need to specify
+            do {
+                String beaconid = query.getString(0);
+                Integer occurrence = query.getInt(1);
+                dbinstr.append("\n" + beaconid + ":" + occurrence);
+            } while(query.moveToNext());
+        }
+        TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
+        dbtextview.setText("");
+        dbtextview.setText(dbinstr);
+
+
+
+
+    }
 }
