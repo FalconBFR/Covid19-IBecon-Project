@@ -13,6 +13,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.altbeacon.beacon.Beacon;
@@ -23,6 +24,7 @@ import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.w3c.dom.Text;
 
 
 import java.util.Collection;
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     private Button startButton;
     private Button stopButton;
+
 
     private BeaconManager beaconManager = null;
     private Region beaconRegion = null; //monitoring region
@@ -70,6 +73,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         stopButton = (Button)findViewById(R.id.stopButton);
         startButton.setOnClickListener((v)->{startBeaconMonitoring();});
         stopButton.setOnClickListener((v)->{stopBeaconMonitoring();});
+
+        TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((ALTBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
@@ -243,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         //todo:need to add an array and counter/ dictionary type thing to bind occurence number with beaconid or things will be messed up.
         //todo:issues when two beacons are together
-        Map<String,Integer>occurrencedict = new HashMap<String,Integer>();
+        //Map<String,Integer>occurrencedict = new HashMap<String,Integer>();
         if(query.moveToFirst()) { //means equals to true, no need to specify
             do {
                 String beaconid = query.getString(0);
@@ -257,9 +262,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 if(beaconid.equals(bidnoquotes)) {
                     System.out.println("hereherehere");
                     occurrence = query.getInt(1);
-                    occurrencedict.put(beaconid, occurrence);
+                    //occurrencedict.put(beaconid, occurrence);
                     Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
                             "BluetoothID =" + beaconid + " occurrence " + occurrence, Toast.LENGTH_LONG).show();
+                    TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
+                    dbtextview.setText("BEFORE SAVED TO DATABASE " + "BluetoothID =" + beaconid + " occurrence " + occurrence);
                 }
             } while(query.moveToNext());
         }
