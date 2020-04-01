@@ -77,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        System.out.println("PRINTING EXAMPLE");
         System.out.println("APP STARTED");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -327,8 +328,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     }
 
     public void transmitbeacon(){
+        autoload();
+        System.out.println(BEACONUUID);
+        System.out.println("^^^^^^^");
         Beacon beacon = new Beacon.Builder()
-                .setId1("9f234454-cf6d-4a0f-adf2-f4911ba9ffa6")
+                .setId1(BEACONUUID)
                 .setId2("1")
                 .setId3("2")
                 .setManufacturer(0x004c)
@@ -351,9 +355,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 fos.write(text.getBytes());
 
                 mEditText.getText().clear();
+                //BEACONUUID = text.getBytes().toString();
+                //System.out.println(BEACONUUID);
+                //System.out.println("*******************************");
                 Toast.makeText(this,"Saved your UUID", Toast.LENGTH_LONG).show();
-                BEACONUUID = text;
-                System.out.println(BEACONUUID);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -385,6 +390,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 }
 
                 mEditText.setText(sb.toString());
+                System.out.println(sb.toString());// sb.toString is correct
+                System.out.println("+++++++++");
 
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -399,6 +406,41 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                     }
                 }
             }
+    }
+
+    public void autoload(){
+        FileInputStream fis = null;
+        try {
+            fis = openFileInput(BEACONIDTXT);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+
+            while((text = br.readLine())!= null){
+                sb.append(text).append("\n");
+            }
+
+            mEditText.setText(sb.toString());
+            BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
+            System.out.println(sb.toString());// sb.toString is correct
+            System.out.println("+++++++++");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis!= null){
+                try {
+                    BEACONUUID = "00000000-0000-0000-0000-000000000000";
+                    //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
 
