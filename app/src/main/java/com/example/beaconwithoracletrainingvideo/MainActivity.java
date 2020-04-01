@@ -13,6 +13,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,13 @@ import org.altbeacon.beacon.Region;
 import org.w3c.dom.Text;
 
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -49,6 +57,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     //private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
     private static final String IBEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
     //
+
+    //UUID management
+    final String BEACONIDTXT = "beaconid.txt";
+    EditText mEditText;
+    public String BEACONUUID;
 
     //main functions
     private void ShowAlert(final String title, final String message) {
@@ -85,6 +98,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT, occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
         //sqLiteDatabase.execSQL
+
+        //related to the UUID TExt Box Below
+        mEditText = findViewById(R.id.edit_text);
+
     }
 
     private Boolean entryMessageRaised = false;
@@ -323,7 +340,67 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         beaconTransmitter.startAdvertising(beacon);
     }
 
-    public void setBeaconTransID(){
+    //public void setBeaconTransID(){
+
+    public void savefile(View v){
+            String text = mEditText.getText().toString();
+            FileOutputStream fos = null;
+
+            try {
+                fos = openFileOutput(BEACONIDTXT, MODE_PRIVATE);
+                fos.write(text.getBytes());
+
+                mEditText.getText().clear();
+                Toast.makeText(this,"Saved your UUID", Toast.LENGTH_LONG).show();
+                BEACONUUID = text;
+                System.out.println(BEACONUUID);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if(fos!= null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
 
     }
+
+    public void load(View v){
+            FileInputStream fis = null;
+
+            try {
+                fis = openFileInput(BEACONIDTXT);
+                InputStreamReader isr = new InputStreamReader(fis);
+                BufferedReader br = new BufferedReader(isr);
+                StringBuilder sb = new StringBuilder();
+                String text;
+
+                while((text = br.readLine())!= null){
+                    sb.append(text).append("\n");
+                }
+
+                mEditText.setText(sb.toString());
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (fis!= null){
+                    try {
+                        fis.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+    }
+
+
+    //}
 }
