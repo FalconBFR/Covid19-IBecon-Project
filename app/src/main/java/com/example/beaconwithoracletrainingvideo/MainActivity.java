@@ -330,6 +330,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     public void transmitbeacon(){
         autoload();
         System.out.println(BEACONUUID);
+        //BEACONUUID = "10000000-0000-0000-0000-000000000000";
         System.out.println("^^^^^^^");
         Beacon beacon = new Beacon.Builder()
                 .setId1(BEACONUUID)
@@ -423,7 +424,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
             mEditText.setText(sb.toString());
             BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
-            System.out.println(sb.toString());// sb.toString is correct
+            //System.out.println("\nheyhey");
+            //System.out.println(sb.toString());// sb.toString is correct
+            //System.out.println("10000000-0000-0000-0000-000000000000");
+            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
+            BEACONUUID = BEACONUUID.replaceAll("\\s+","");
+            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
             System.out.println("+++++++++");
 
         } catch (FileNotFoundException e) {
@@ -431,15 +437,16 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (fis!= null){
+            //if (fis!= null){
                 try {
-                    BEACONUUID = "00000000-0000-0000-0000-000000000000";
+                    System.out.println("here1223");
                     //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
                     fis.close();
+                    System.out.println("here");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            }
+            //}
         }
     }
 
