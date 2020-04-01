@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private Region beaconRegion = null; //monitoring region
 
     private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
+    private static final String IBEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
     //
 
     //main functions
@@ -77,7 +78,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
 
         beaconManager = BeaconManager.getInstanceForApplication(this);
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((ALTBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
         beaconManager.bind(this);
 
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -175,12 +176,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private void stopBeaconMonitoring(){
         System.out.println("Stop Beacon Monitoring");
         Log.d(TAG,"stopBeaconMonitoring called");
-        /*try{
+        try{
             beaconManager.stopMonitoringBeaconsInRegion(beaconRegion);
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
         } catch (RemoteException e) {
             e.printStackTrace();
-        } */
+        } 
     }
 
     //don't use, use saveCloseContacts2 instead
