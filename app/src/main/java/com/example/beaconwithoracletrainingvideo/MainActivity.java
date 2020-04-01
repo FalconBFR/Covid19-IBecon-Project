@@ -20,6 +20,7 @@ import org.altbeacon.beacon.Beacon;
 import org.altbeacon.beacon.BeaconConsumer;
 import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.BeaconTransmitter;
 import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private BeaconManager beaconManager = null;
     private Region beaconRegion = null; //monitoring region
 
-    private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
+    //private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
     private static final String IBEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
     //
 
@@ -168,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             beaconRegion = new Region("MyBeaconStuff",null,null,null);
             beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
+            transmitbeacon();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -181,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
         } catch (RemoteException e) {
             e.printStackTrace();
-        } 
+        }
     }
 
     //don't use, use saveCloseContacts2 instead
@@ -305,5 +307,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
 
 
+    }
+
+    public void transmitbeacon(){
+        Beacon beacon = new Beacon.Builder()
+                .setId1("9f234454-cf6d-4a0f-adf2-f4911ba9ffa6")
+                .setId2("1")
+                .setId3("2")
+                .setManufacturer(0x004c)
+                .setTxPower(-59)
+                .build();
+        BeaconParser beaconParser = new BeaconParser()
+                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+        BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+        beaconTransmitter.startAdvertising(beacon);
     }
 }
