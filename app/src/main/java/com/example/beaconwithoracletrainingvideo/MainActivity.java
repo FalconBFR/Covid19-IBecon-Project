@@ -322,4 +322,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
         beaconTransmitter.startAdvertising(beacon);
     }
+
+    public void setBeaconTransID(){
+
+    }
 }
