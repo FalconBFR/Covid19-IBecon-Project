@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     //UUID management
     final String BEACONIDTXT = "beaconid.txt";
     EditText mEditText;
-    public String BEACONUUID;
 
     //main functions
     private void ShowAlert(final String title, final String message) {
@@ -156,12 +155,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                           //      " Beacon detected UUID/major/minor:" + beacon.getId1() + "/" +
                             //    beacon.getId2() + "/" + beacon.getId3());
                         //pubbeacon = beacon;
-                        System.out.println(beacon.getId1());
-                        System.out.println("Here is your beacon");
-                        System.out.println(beacon);
-                        System.out.println("That was the beacon");
+                        Double beacondist = beacons.iterator().next().getDistance();
+                        Log.d(TAG, "didRangeBeaconsInRegion:"+ beacondist + beacon);;
                         Log.d(TAG,"writing to database");
-                        saveclosecontacts2(beacon);
+                        saveclosecontacts2(beacon,beacondist);
                         Log.d(TAG,"writing to databse complete");
                         //public pubbeacon = beacon.getId1();
                         //getClass(beacon);
@@ -243,7 +240,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         sqLiteDatabase.close();
     }
 
-    public void saveclosecontacts2(Beacon beacon){
+    public void saveclosecontacts2(Beacon beacon, Double distance){
         Identifier beaconid1; //beaconid1
         int occurrence = 0; // initalize
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -254,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //
         //
 
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER, closestavgdist DOUBLE)"); //a table in the database named 'contacts' will be created if it does not exist
         sqLiteDatabase.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_beaconid ON contacts(beaconid)");
 
         //declaring the variable 'tobeputinsql' as the variable to store the commands
@@ -268,20 +265,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
 
-        //todo:need to add an array and counter/ dictionary type thing to bind occurence number with beaconid or things will be messed up.
-        //todo:issues when two beacons are together
-        //Map<String,Integer>occurrencedict = new HashMap<String,Integer>();
         if(query.moveToFirst()) { //means equals to true, no need to specify
             do {
                 String beaconid = query.getString(0);
-                System.out.println(beaconid);
-                System.out.println(bidnoquotes);
 
                 if(beaconid.equals(bidnoquotes)) {
                     occurrence = query.getInt(1);
-                    //occurrencedict.put(beaconid, occurrence);
+                    Double distanceprevious = query.getDouble(2);
+                    if(distance>distanceprevious){
+                        distance = distanceprevious;
+                    }
                     Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
-                            "BluetoothID =" + beaconid + " occurrence " + occurrence, Toast.LENGTH_LONG).show();
+                            "BluetoothID =" + beaconid + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
                 }
             } while(query.moveToNext());
         }
@@ -294,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 //" WHERE beaconid = '0ac59ca4-dfa6-442c-8c65-22247851344c'";
 
         int newoccurrence = occurrence + 1;
-        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + ");";
+        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance +");";
         Log.d(TAG, "onCreate: sql is" + tobeputinsql);
         sqLiteDatabase.execSQL(tobeputinsql);
 
@@ -315,7 +310,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             do {
                 String beaconid = query.getString(0);
                 Integer occurrence = query.getInt(1);
-                dbinstr.append("\n" + beaconid + ":" + occurrence);
+                Double beacondist = query.getDouble(2);
+                StringBuilder concatbeaconid = new StringBuilder("");
+                //String concatbeaconid ="";
+                for(int characterno = 0; characterno<5;characterno++){
+                    concatbeaconid.append(beaconid.charAt(characterno));
+                }
+                dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence+":   "+beacondist+"m");
             } while(query.moveToNext());
         }
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
@@ -328,7 +329,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     }
 
     public void transmitbeacon(){
-        autoload();
+        String BEACONUUID = autoload();
         System.out.println(BEACONUUID);
         //BEACONUUID = "10000000-0000-0000-0000-000000000000";
         System.out.println("^^^^^^^");
@@ -409,7 +410,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
     }
 
-    public void autoload(){
+    public String autoload(){
+        String BEACONUUID = "";
         FileInputStream fis = null;
         try {
             fis = openFileInput(BEACONIDTXT);
@@ -448,6 +450,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 }
             //}
         }
+        return BEACONUUID;
     }
 
 
