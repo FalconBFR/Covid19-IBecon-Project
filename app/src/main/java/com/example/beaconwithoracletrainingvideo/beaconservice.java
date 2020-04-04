@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 public class beaconservice extends Service implements BeaconConsumer {
 
@@ -155,16 +156,28 @@ public class beaconservice extends Service implements BeaconConsumer {
             Log.d(TAG, "startBeaconMonitoring called");
             System.out.println("START BEACON MONITORING FUNCTION");
             try {
+                System.out.println("uno");
                 System.out.println(beaconRegion);
+                System.out.println("dos");
                 beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
+                System.out.println("tres");
                 beaconManager.startRangingBeaconsInRegion(beaconRegion);
+                System.out.println("quatro");
                 transmitbeacon();
+                System.out.println("cinco");
             } catch (RemoteException e) {
+                System.out.println("mal");
                 e.printStackTrace();
             }
             // Stop the service using the startId, so that we don't stop
             // the service in the middle of handling another job
-            stopSelf(msg.arg1);
+            //stopSelf(msg.arg1);
+                //TimeUnit.MINUTES.sleep(1);
+            System.out.println("reaches");
+            if (Thread.interrupted()) {
+                System.out.println("oopsopsohno");
+                return;
+            }
         }
     }
 
@@ -207,8 +220,10 @@ public class beaconservice extends Service implements BeaconConsumer {
     }
 
     public void transmitbeacon() {
+        System.out.println("transmit-uno");
         String BEACONUUID = autoload();
         System.out.println(BEACONUUID);
+        System.out.println("transmit-dos");
         //BEACONUUID = "10000000-0000-0000-0000-000000000000";
         System.out.println("^^^^^^^");
         Beacon beacon = new Beacon.Builder()
@@ -218,10 +233,14 @@ public class beaconservice extends Service implements BeaconConsumer {
                 .setManufacturer(0x004c)
                 .setTxPower(-59)
                 .build();
+        System.out.println("transmit-tres");
         BeaconParser beaconParser = new BeaconParser()
                 .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+        System.out.println("transmit-quatro");
         BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+        System.out.println("transmit-cinco");
         beaconTransmitter.startAdvertising(beacon);
+        System.out.println("transmit-seis");
     }
 
     public String autoload() {
@@ -238,7 +257,7 @@ public class beaconservice extends Service implements BeaconConsumer {
                 sb.append(text).append("\n");
             }
 
-            mEditText.setText(sb.toString());
+            //mEditText.setText(sb.toString());
             BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
             //System.out.println("\nheyhey");
             //System.out.println(sb.toString());// sb.toString is correct
@@ -268,6 +287,7 @@ public class beaconservice extends Service implements BeaconConsumer {
     }
 
     public void saveclosecontacts2(Beacon beacon, Double distance) {
+        System.out.println("savingtodb!In service! Yeah");
         Identifier beaconid1; //beaconid1
         int occurrence = 0; // initalize
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -323,6 +343,8 @@ public class beaconservice extends Service implements BeaconConsumer {
         //stopping query
         query.close();
         sqLiteDatabase.close();
+        MainActivity mainActivity = new MainActivity();
+        mainActivity.loaddbview();
 
         //loaddbview();
 

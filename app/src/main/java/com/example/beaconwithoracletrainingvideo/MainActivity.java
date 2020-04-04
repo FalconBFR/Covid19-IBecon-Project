@@ -94,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
             startService(new Intent (this, beaconservice.class));
+            loaddbview();
         });
         System.out.println("OMGOMGOMG");
         //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
@@ -103,9 +104,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
 
-        beaconManager = BeaconManager.getInstanceForApplication(this);
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
-        beaconManager.bind(this);
+        //beaconManager = BeaconManager.getInstanceForApplication(this);
+        //beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
+        //beaconManager.bind(this);
 
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT, occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
@@ -113,6 +114,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         //related to the UUID TExt Box Below
         mEditText = findViewById(R.id.edit_text);
+
+        loaddbview();
 
     }
 
