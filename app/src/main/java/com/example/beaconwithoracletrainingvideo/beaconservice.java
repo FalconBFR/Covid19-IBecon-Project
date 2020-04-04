@@ -43,7 +43,7 @@ public class beaconservice extends Service implements BeaconConsumer {
         return super.getApplicationContext();
     }
 
-    //public Context context = getApplicationContext();
+    //public Context context = getApplicationContext(); //not needed.
 
     private static final String TAG = "MainActivity";
 
