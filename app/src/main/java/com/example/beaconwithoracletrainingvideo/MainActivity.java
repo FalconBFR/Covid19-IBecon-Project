@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
 import android.app.Dialog;
+import android.app.IntentService;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -47,12 +49,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     //initialize
     private static final String TAG = "MainActivity";
 
+
+
     private Button startButton;
     private Button stopButton;
 
 
-    private BeaconManager beaconManager = null;
-    private Region beaconRegion = null; //monitoring region
+    public BeaconManager beaconManager = null;
+    //public Region beaconRegion = null; //monitoring region
 
     //private static final String ALTBEACON_LAYOUT = "m:2-3=beac,i:4-19,i:20-21,i:22-23,p:24-24,d:25-25"; //Todo: switch to IBeacon Later
     private static final String IBEACON_LAYOUT = "m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24";
@@ -63,17 +67,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     EditText mEditText;
 
     //main functions
-    private void ShowAlert(final String title, final String message) {
-       runOnUiThread(() -> {
-           AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
-           alertDialog.setTitle(title);
-           alertDialog.setMessage(message);
-           alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL,"OK", (DialogInterface.OnClickListener) (dialog, which)->{
-               dialog.dismiss();
-           });
-           alertDialog.show();
-       });
-   }
+    public void ShowAlert(final String title, final String message) {
+        runOnUiThread(() -> {
+            AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
+            alertDialog.setTitle(title);
+            alertDialog.setMessage(message);
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "OK", (DialogInterface.OnClickListener) (dialog, which) -> {
+                dialog.dismiss();
+            });
+            alertDialog.show();
+        });
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         System.out.println("PRINTING EXAMPLE");
@@ -82,12 +87,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         setContentView(R.layout.activity_main);
 
         //error due to api version issues. Debugger explains. Ignore for now. (Api 23 , API 21)
-        requestPermissions(new String[] {Manifest.permission.ACCESS_COARSE_LOCATION}, 1234); //check min api error
+        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1234); //check min api error
 
-        startButton = (Button)findViewById(R.id.startButton);
-        stopButton = (Button)findViewById(R.id.stopButton);
-        startButton.setOnClickListener((v)->{startBeaconMonitoring();});
-        stopButton.setOnClickListener((v)->{stopBeaconMonitoring();});
+        startButton = (Button) findViewById(R.id.startButton);
+        stopButton = (Button) findViewById(R.id.stopButton);
+        //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
+        startButton.setOnClickListener((v) -> {
+            startService(new Intent (this, beaconservice.class));
+        });
+        System.out.println("OMGOMGOMG");
+        //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
+        stopButton.setOnClickListener((v) -> {
+            stopService(new Intent(this, beaconservice.class));
+        });
 
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
 
@@ -104,12 +116,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     }
 
-    private Boolean entryMessageRaised = false;
-    private Boolean exitMessageRaised = false;
-    private Boolean rangingMessageRaised = false;
 
     @Override
-    public void onBeaconServiceConnect(){
+    public void onBeaconServiceConnect() {
         Log.d(TAG, "onBeaconServiceConnect called");
 
         beaconManager.setMonitorNotifier(new MonitorNotifier() {
@@ -117,10 +126,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             public void didEnterRegion(Region region) {
                 System.out.println("DID ENTER REGION");
                 //if (!entryMessageRaised) {
-                    //todo: change logic later
-                    ShowAlert("did Enter Region", "Entering Region" + region.getUniqueId() +
-                            "Beacon detected UUID/major/minor:" + region.getId1()+"/"+region.getId2()+"/"+region.getId3());
-                    //entryMessageRaised = true;
+                //todo: change logic later
+                ShowAlert("did Enter Region", "Entering Region" + region.getUniqueId() +
+                        "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
+                //entryMessageRaised = true;
                 //}
                 //this is how you acess beacon  - System.out.println(beaconreal.getId1());
             }
@@ -129,13 +138,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             public void didExitRegion(Region region) {
                 System.out.println("DID EXIT REGION");
                 //if (!exitMessageRaised) {
-                    //todo: change logic later
-                    ShowAlert("did Exit Region", "Exiting Region" + region.getUniqueId() +
-                            "Beacon detected UUID/major/minor:" + region.getId1()+"/"+region.getId2()+"/"+region.getId3());
+                //todo: change logic later
+                ShowAlert("did Exit Region", "Exiting Region" + region.getUniqueId() +
+                        "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
                 //System.out.println(beaconRegion.getId1());
                 //System.out.println(beacon.get);
                 //System.out.println(beacon.getid1);
-                    exitMessageRaised = true;
+                //exitMessageRaised = true;
                 //}
             }
 
@@ -150,24 +159,25 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 //if(!rangingMessageRaised && beacons != null && !beacons.isEmpty()) {
                 //if(!beacons.isEmpty()){
-                    for (Beacon beacon: beacons) {
-                        //ShowAlert("didExitRangeRegion", "Ranging region" + region.getUniqueId() +
-                          //      " Beacon detected UUID/major/minor:" + beacon.getId1() + "/" +
-                            //    beacon.getId2() + "/" + beacon.getId3());
-                        //pubbeacon = beacon;
-                        Double beacondist = beacons.iterator().next().getDistance();
-                        Log.d(TAG, "didRangeBeaconsInRegion:"+ beacondist + beacon);;
-                        Log.d(TAG,"writing to database");
-                        saveclosecontacts2(beacon,beacondist);
-                        Log.d(TAG,"writing to databse complete");
-                        //public pubbeacon = beacon.getId1();
-                        //getClass(beacon);
-                        //Region beaconRegionactual = new Region("MyBeaconStuff", beacon.getId1(), beacon.getId2(), beacon.getId3());
+                for (Beacon beacon : beacons) {
+                    //ShowAlert("didExitRangeRegion", "Ranging region" + region.getUniqueId() +
+                    //      " Beacon detected UUID/major/minor:" + beacon.getId1() + "/" +
+                    //    beacon.getId2() + "/" + beacon.getId3());
+                    //pubbeacon = beacon;
+                    Double beacondist = beacons.iterator().next().getDistance();
+                    Log.d(TAG, "didRangeBeaconsInRegion:" + beacondist + beacon);
+                    ;
+                    Log.d(TAG, "writing to database");
+                    saveclosecontacts2(beacon, beacondist);
+                    Log.d(TAG, "writing to databse complete");
+                    //public pubbeacon = beacon.getId1();
+                    //getClass(beacon);
+                    //Region beaconRegionactual = new Region("MyBeaconStuff", beacon.getId1(), beacon.getId2(), beacon.getId3());
                     //}
-                        System.out.println(beacons.isEmpty());
-                        rangingMessageRaised = true;
-                        //beaconreal = beacon;
-                //}
+                    System.out.println(beacons.isEmpty());
+                    //rangingMessageRaised = true;
+                    //beaconreal = beacon;
+                    //}
 
                 }
 
@@ -175,13 +185,35 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         });
     }
 
-    private void startBeaconMonitoring(){
+    /*public void startBeaconMonitoring() {
+        BeaconManager beaconManager = null;
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
+        beaconManager.bind(this);
+        Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
+        System.out.println(beaconRegion);
         Log.d(TAG, "startBeaconMonitoring called");
         System.out.println("START BEACON MONITORING FUNCTION");
-        try{
-            //beaconRegion = new Region("MyBeacons", Identifier.parse("0AC59CA4-DFA6-442C-8C65-22247851344C"),
-                   // Identifier.parse("4"),Identifier.parse("200"));
-            beaconRegion = new Region("MyBeaconStuff",null,null,null);
+        try {
+            System.out.println(beaconRegion);
+            beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
+            beaconManager.startRangingBeaconsInRegion(beaconRegion);
+            transmitbeacon();
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    public void startBeaconMonitoring() {
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
+        beaconManager.bind(this);
+        Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
+        System.out.println(beaconRegion);
+        Log.d(TAG, "startBeaconMonitoring called");
+        System.out.println("START BEACON MONITORING FUNCTION");
+        try {
+            System.out.println(beaconRegion);
             beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
             beaconManager.startRangingBeaconsInRegion(beaconRegion);
             transmitbeacon();
@@ -190,10 +222,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         }
     }
 
-    private void stopBeaconMonitoring(){
+    public void stopBeaconMonitoring() {
+        Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
         System.out.println("Stop Beacon Monitoring");
-        Log.d(TAG,"stopBeaconMonitoring called");
-        try{
+        Log.d(TAG, "stopBeaconMonitoring called");
+        try {
             beaconManager.stopMonitoringBeaconsInRegion(beaconRegion);
             beaconManager.stopRangingBeaconsInRegion(beaconRegion);
         } catch (RemoteException e) {
@@ -202,7 +235,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     }
 
     //don't use, use saveCloseContacts2 instead
-    public void saveCloseContacts(Beacon beacon){
+    public void saveCloseContacts(Beacon beacon) {
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //for testing purposes only
         //
@@ -215,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         Identifier beaconid1; //beaconid1
         beaconid1 = beacon.getId1();
         String beaconidstr = beaconid1.toString();
-        beaconidstr = "'"+ beaconidstr + "'";
+        beaconidstr = "'" + beaconidstr + "'";
 
 
         tobeputinsql = "INSERT INTO contacts VALUES(" + beaconidstr + ", 1);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
@@ -224,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         //just for development purposes, to confirm it is written to the DB
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-        if(query.moveToFirst()) { //means equals to true, no need to specify
+        if (query.moveToFirst()) { //means equals to true, no need to specify
             do {
                 String name = query.getString(0);
                 int phone = query.getInt(1);
@@ -232,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 Toast.makeText(this, "SAVED TO DATABASE " +
                         "BluetoothID =" + name + " occurrence " + phone, Toast.LENGTH_LONG).show();
 
-            } while(query.moveToNext());
+            } while (query.moveToNext());
 
 
         }
@@ -240,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         sqLiteDatabase.close();
     }
 
-    public void saveclosecontacts2(Beacon beacon, Double distance){
+    public void saveclosecontacts2(Beacon beacon, Double distance) {
         Identifier beaconid1; //beaconid1
         int occurrence = 0; // initalize
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -261,24 +294,24 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         beaconid1 = beacon.getId1();
         String beaconidstr = beaconid1.toString();
         String bidnoquotes = beaconidstr;
-        beaconidstr = "'"+ beaconidstr + "'";
+        beaconidstr = "'" + beaconidstr + "'";
 
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
 
-        if(query.moveToFirst()) { //means equals to true, no need to specify
+        if (query.moveToFirst()) { //means equals to true, no need to specify
             do {
                 String beaconid = query.getString(0);
 
-                if(beaconid.equals(bidnoquotes)) {
+                if (beaconid.equals(bidnoquotes)) {
                     occurrence = query.getInt(1);
                     Double distanceprevious = query.getDouble(2);
-                    if(distance>distanceprevious){
+                    if (distance > distanceprevious) {
                         distance = distanceprevious;
                     }
                     Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
                             "BluetoothID =" + beaconid + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
                 }
-            } while(query.moveToNext());
+            } while (query.moveToNext());
         }
 
         //saving values to DB
@@ -286,10 +319,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //sqLiteDatabase.execSQL(tobeputinsql);
         //tobeputinsql = "UPDATE contacts SET occurrence = occurrence + 1";
         //tobeputinsql = "UPDATE contacts SET occurrence = (occurrence + 50)";
-                //" WHERE beaconid = '0ac59ca4-dfa6-442c-8c65-22247851344c'";
+        //" WHERE beaconid = '0ac59ca4-dfa6-442c-8c65-22247851344c'";
 
         int newoccurrence = occurrence + 1;
-        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance +");";
+        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance + ");";
         Log.d(TAG, "onCreate: sql is" + tobeputinsql);
         sqLiteDatabase.execSQL(tobeputinsql);
 
@@ -302,33 +335,31 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     }
     //
 
-    public void loaddbview(){
+    public void loaddbview() {
         StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-        if(query.moveToFirst()) { //means equals to true, no need to specify
+        if (query.moveToFirst()) { //means equals to true, no need to specify
             do {
                 String beaconid = query.getString(0);
                 Integer occurrence = query.getInt(1);
                 Double beacondist = query.getDouble(2);
                 StringBuilder concatbeaconid = new StringBuilder("");
                 //String concatbeaconid ="";
-                for(int characterno = 0; characterno<5;characterno++){
+                for (int characterno = 0; characterno < 5; characterno++) {
                     concatbeaconid.append(beaconid.charAt(characterno));
                 }
-                dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence+":   "+beacondist+"m");
-            } while(query.moveToNext());
+                dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondist + "m");
+            } while (query.moveToNext());
         }
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
         dbtextview.setText("");
         dbtextview.setText(dbinstr);
 
 
-
-
     }
 
-    public void transmitbeacon(){
+    public void transmitbeacon() {
         String BEACONUUID = autoload();
         System.out.println(BEACONUUID);
         //BEACONUUID = "10000000-0000-0000-0000-000000000000";
@@ -348,69 +379,69 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     //public void setBeaconTransID(){
 
-    public void savefile(View v){
-            String text = mEditText.getText().toString();
-            FileOutputStream fos = null;
+    public void savefile(View v) {
+        String text = mEditText.getText().toString();
+        FileOutputStream fos = null;
 
-            try {
-                fos = openFileOutput(BEACONIDTXT, MODE_PRIVATE);
-                fos.write(text.getBytes());
+        try {
+            fos = openFileOutput(BEACONIDTXT, MODE_PRIVATE);
+            fos.write(text.getBytes());
 
-                mEditText.getText().clear();
-                //BEACONUUID = text.getBytes().toString();
-                //System.out.println(BEACONUUID);
-                //System.out.println("*******************************");
-                Toast.makeText(this,"Saved your UUID", Toast.LENGTH_LONG).show();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if(fos!= null) {
-                    try {
-                        fos.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+            mEditText.getText().clear();
+            //BEACONUUID = text.getBytes().toString();
+            //System.out.println(BEACONUUID);
+            //System.out.println("*******************************");
+            Toast.makeText(this, "Saved your UUID", Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
+        }
 
     }
 
-    public void load(View v){
-            FileInputStream fis = null;
+    public void load(View v) {
+        FileInputStream fis = null;
 
-            try {
-                fis = openFileInput(BEACONIDTXT);
-                InputStreamReader isr = new InputStreamReader(fis);
-                BufferedReader br = new BufferedReader(isr);
-                StringBuilder sb = new StringBuilder();
-                String text;
+        try {
+            fis = openFileInput(BEACONIDTXT);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
 
-                while((text = br.readLine())!= null){
-                    sb.append(text).append("\n");
-                }
+            while ((text = br.readLine()) != null) {
+                sb.append(text).append("\n");
+            }
 
-                mEditText.setText(sb.toString());
-                System.out.println(sb.toString());// sb.toString is correct
-                System.out.println("+++++++++");
+            mEditText.setText(sb.toString());
+            System.out.println(sb.toString());// sb.toString is correct
+            System.out.println("+++++++++");
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                if (fis!= null){
-                    try {
-                        fis.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
+        }
     }
 
-    public String autoload(){
+    public String autoload() {
         String BEACONUUID = "";
         FileInputStream fis = null;
         try {
@@ -420,7 +451,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             StringBuilder sb = new StringBuilder();
             String text;
 
-            while((text = br.readLine())!= null){
+            while ((text = br.readLine()) != null) {
                 sb.append(text).append("\n");
             }
 
@@ -430,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             //System.out.println(sb.toString());// sb.toString is correct
             //System.out.println("10000000-0000-0000-0000-000000000000");
             //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
-            BEACONUUID = BEACONUUID.replaceAll("\\s+","");
+            BEACONUUID = BEACONUUID.replaceAll("\\s+", "");
             //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
             System.out.println("+++++++++");
 
@@ -440,19 +471,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             e.printStackTrace();
         } finally {
             //if (fis!= null){
-                try {
-                    System.out.println("here1223");
-                    //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
-                    fis.close();
-                    System.out.println("here");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                System.out.println("here1223");
+                //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
+                fis.close();
+                System.out.println("here");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             //}
         }
         return BEACONUUID;
     }
 
 
-    //}
+
 }
