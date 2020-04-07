@@ -4,8 +4,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.IntentService;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -28,6 +31,7 @@ import org.altbeacon.beacon.Identifier;
 import org.altbeacon.beacon.MonitorNotifier;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.service.BeaconService;
 import org.w3c.dom.Text;
 
 
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     //initialize
     private static final String TAG = "MainActivity";
 
-
+    public Context context;
 
     private Button startButton;
     private Button stopButton;
@@ -65,6 +69,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     //UUID management
     final String BEACONIDTXT = "beaconid.txt";
     EditText mEditText;
+
+    Context basecontext = null;
 
     //main functions
     public void ShowAlert(final String title, final String message) {
@@ -94,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
             startService(new Intent (this, beaconservice.class));
-            loaddbview();
+            loaddbview(this);
         });
         System.out.println("OMGOMGOMG");
         //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
@@ -115,7 +121,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //related to the UUID TExt Box Below
         mEditText = findViewById(R.id.edit_text);
 
-        loaddbview();
+        System.out.println("getBaseContextOnCreate" + getBaseContext());
+        basecontext = getBaseContext();
+
+        loaddbview(this);
 
     }
 
@@ -223,6 +232,17 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public Context getApplicationContext() {
+        System.out.println("ever here at getappcontext");
+        return super.getApplicationContext();
+    }
+
+    @Override
+    public Context getBaseContext() {
+        return super.getBaseContext();
     }
 
     public void stopBeaconMonitoring() {
@@ -333,14 +353,20 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         query.close();
         sqLiteDatabase.close();
 
-        loaddbview();
+        loaddbview(this);
 
     }
     //
 
-    public void loaddbview() {
+    public void loaddbview(Context context) {
+        //Context context = this.context;
+        System.out.println("this is the context ______________________________" + context);
         StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
-        SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+        System.out.println("souting the base context:" + getBaseContext());
+        System.out.println(basecontext);
+        //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+        BeaconService beaconService = new BeaconService();
+        SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
         if (query.moveToFirst()) { //means equals to true, no need to specify
             do {
@@ -355,6 +381,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondist + "m");
             } while (query.moveToNext());
         }
+        final String BEACONIDTXT = "beaconid.txt";
+        //setContentView(R.layout.activity_main);
+        EditText mEditText;
+        //setContentView(R.layout.activity_main);
+        System.out.println("actually");
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
         dbtextview.setText("");
         dbtextview.setText(dbinstr);
@@ -485,6 +516,18 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             //}
         }
         return BEACONUUID;
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        @SuppressLint({"NewApi", "LocalSuppress"}) ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                Log.i ("isMyServiceRunning?", true+"");
+                return true;
+            }
+        }
+        Log.i ("isMyServiceRunning?", false+"");
+        return false;
     }
 
 

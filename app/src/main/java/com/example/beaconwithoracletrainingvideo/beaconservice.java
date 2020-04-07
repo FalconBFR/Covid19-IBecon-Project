@@ -217,6 +217,11 @@ public class beaconservice extends Service implements BeaconConsumer {
     @Override
     public void onDestroy() {
         Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+        super.onDestroy();
+        Log.i("EXIT", "ondestroy!");
+        Intent broadcastIntent = new Intent(this, SensorRestarterBroadcastReceiver.class);
+
+        sendBroadcast(broadcastIntent);
     }
 
     public void transmitbeacon() {
@@ -343,8 +348,8 @@ public class beaconservice extends Service implements BeaconConsumer {
         //stopping query
         query.close();
         sqLiteDatabase.close();
-        MainActivity mainActivity = new MainActivity();
-        mainActivity.loaddbview();
+        //MainActivity mainActivity = new MainActivity();
+        //mainActivity.loaddbview(this);
 
         //loaddbview();
 
