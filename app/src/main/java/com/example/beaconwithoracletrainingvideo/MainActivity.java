@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     private Button startButton;
     private Button stopButton;
+    private Button dbupdate;
 
 
     public BeaconManager beaconManager = null;
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         startButton = (Button) findViewById(R.id.startButton);
         stopButton = (Button) findViewById(R.id.stopButton);
+        dbupdate = (Button)findViewById(R.id.dbupdate);
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
             startService(new Intent (this, beaconservice.class));
@@ -106,6 +108,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
         stopButton.setOnClickListener((v) -> {
             stopService(new Intent(this, beaconservice.class));
+        });
+
+        dbupdate.setOnClickListener((v) -> {
+            loaddbview(this);
         });
 
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
