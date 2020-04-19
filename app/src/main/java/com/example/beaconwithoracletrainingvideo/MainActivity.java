@@ -732,12 +732,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                     .getAbsolutePath() + "/closecontacts.txt";
             //fos = openFileOutput("closecontacts.txt", MODE_PRIVATE);
 
-            fos = new FileOutputStream(file_name,true);
+            fos = new FileOutputStream(file_name,false);
             //fos.write(text.getBytes());
             String tobewrittendata;
             tobewrittendata = "\n";
             fos.write(tobewrittendata.getBytes());
             tobewrittendata = patientsdata.toString();
+            tobewrittendata = tobewrittendata.replace("}","\n");
             fos.write(tobewrittendata.getBytes());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
