@@ -13,6 +13,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
@@ -36,14 +37,22 @@ import org.w3c.dom.Text;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -58,6 +67,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     private Button startButton;
     private Button stopButton;
     private Button dbupdate;
+    private Button loadtheill;
+    public Boolean ViewingDB = true; //else viewing close contacts
 
 
     public BeaconManager beaconManager = null;
@@ -88,6 +99,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        File myFile = new File("closecontacts.txt");
+        try {
+            myFile.createNewFile(); // if file already exists will do nothing
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         System.out.println("PRINTING EXAMPLE");
         System.out.println("APP STARTED");
         super.onCreate(savedInstanceState);
@@ -98,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         startButton = (Button) findViewById(R.id.startButton);
         stopButton = (Button) findViewById(R.id.stopButton);
+        loadtheill = (Button) findViewById(R.id.loadtheill);
         dbupdate = (Button)findViewById(R.id.dbupdate);
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
@@ -113,6 +131,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         dbupdate.setOnClickListener((v) -> {
             loaddbview(this);
         });
+
+        loadtheill.setOnClickListener((v) -> {
+            loadillclosecontactsview(this);
+        });
+
 
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
 
@@ -131,6 +154,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         basecontext = getBaseContext();
 
         loaddbview(this);
+
+        DownoladData downloadData = new DownoladData();
+        downloadData.execute("");
 
     }
 
@@ -202,25 +228,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
         });
     }
-
-    /*public void startBeaconMonitoring() {
-        BeaconManager beaconManager = null;
-        beaconManager = BeaconManager.getInstanceForApplication(this);
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
-        beaconManager.bind(this);
-        Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
-        System.out.println(beaconRegion);
-        Log.d(TAG, "startBeaconMonitoring called");
-        System.out.println("START BEACON MONITORING FUNCTION");
-        try {
-            System.out.println(beaconRegion);
-            beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
-            beaconManager.startRangingBeaconsInRegion(beaconRegion);
-            transmitbeacon();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     public void startBeaconMonitoring() {
         beaconManager = BeaconManager.getInstanceForApplication(this);
@@ -359,17 +366,14 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         query.close();
         sqLiteDatabase.close();
 
-        loaddbview(this);
+        //loaddbview(this);
 
     }
     //
 
     public void loaddbview(Context context) {
         //Context context = this.context;
-        System.out.println("this is the context ______________________________" + context);
         StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
-        System.out.println("souting the base context:" + getBaseContext());
-        System.out.println(basecontext);
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         BeaconService beaconService = new BeaconService();
         SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -387,9 +391,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondist + "m");
             } while (query.moveToNext());
         }
-        final String BEACONIDTXT = "beaconid.txt";
+        //final String BEACONIDTXT = "beaconid.txt";
         //setContentView(R.layout.activity_main);
-        EditText mEditText;
+        //EditText mEditText;
         //setContentView(R.layout.activity_main);
         System.out.println("actually");
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
@@ -399,6 +403,108 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     }
 
+    public void loadillclosecontactsview(Context context) {
+        //String text = mEditText.getText().toString();
+        //Context context = this.context;
+        StringBuilder datainstr = new StringBuilder("ILL Close Contacts Table \n : Beaconid ");
+        System.out.println("loadingillclose");
+
+        //EditText mEditText = null;
+        //System.out.println("actually");
+        //FileInputStream fis = null;
+        try {
+            //String fileName = "closecontacts.txt";
+            String file_name = this.getFilesDir()
+                    .getAbsolutePath() + "/closecontacts.txt";
+            File file = new File(file_name);
+            System.out.println("the file line 418 file"+file);
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+            //MUST NOT DEBUG BY PRINTING OUT BR.READLINE() since it can only be done once
+            //System.out.println("423" + br.readLine());
+            //System.out.println("isthistxtnull427"+ (br.readLine()==null)+br.readLine());
+            //System.out.println(br.readLine()+"readinglinebro");
+            String line;
+            Boolean lastlinewasempty = false;
+            Integer counter = 0;
+            while((line = br.readLine()) != null | counter>3 ){ // '|'means or
+                System.out.println("entered 428 while loop");
+                //process the line
+                /*//stop reading logic: if 3 consecutive lines are empty
+                lastlinewasempty = false;
+                if (br.readLine() == null){
+                    counter +=1;
+                    lastlinewasempty = true;
+                    System.out.println("crap file line empty");
+                } else {
+                    lastlinewasempty = false;
+                    counter=0;
+                }*/
+                System.out.println("datainstr line"+line);
+                datainstr.append("\n"+line.toString());
+                System.out.println("datainstr" + datainstr);
+            }
+            System.out.println("FINAL DATAINSTR" + datainstr);
+            br.close();
+        } catch (FileNotFoundException e) {
+            System.out.println("loadingfilenotfound431");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("IOE449");
+            e.printStackTrace();
+        }
+        TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
+        dbtextview.setText(datainstr);
+
+        /*try {
+            //fis = openFileInput("closecontacts.txt");
+            File file = new File("closecontacts.txt");
+            FileInputStream fis = new FileInputStream(file);
+            InputStreamReader isr = new InputStreamReader(fis, cs);
+            BufferedReader br = new BufferedReader(isr);
+
+            String line;
+            while((line = br.readLine()) != null){
+                //process the line
+                System.out.println(line);
+            }
+            br.close();
+
+
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            //StringBuilder sb = new StringBuilder();
+            String displayingtext;
+
+            while ((displayingtext = br.readLine()) != null) {
+            //displayingtext = br.readLine();
+                datainstr.append(displayingtext).append("\n");
+                System.out.println("datainstr"+datainstr);
+            }
+
+            mEditText.setText(datainstr.toString());
+            System.out.println(datainstr.toString());// sb.toString is correct
+            System.out.println("+++++++++");
+            TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
+            dbtextview.setText("lollol");
+            //dbtextview.setText(datainstr);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }*/
+
+
+    }
     public void transmitbeacon() {
         String BEACONUUID = autoload();
         System.out.println(BEACONUUID);
@@ -497,13 +603,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
             mEditText.setText(sb.toString());
             BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
-            //System.out.println("\nheyhey");
-            //System.out.println(sb.toString());// sb.toString is correct
-            //System.out.println("10000000-0000-0000-0000-000000000000");
-            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
             BEACONUUID = BEACONUUID.replaceAll("\\s+", "");
-            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
-            System.out.println("+++++++++");
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -535,6 +635,127 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         Log.i ("isMyServiceRunning?", false+"");
         return false;
     }
+
+    private class DownoladData extends AsyncTask<String,Void, List> {
+        private static final String TAG = "DownloadedData";
+        @Override
+        protected void onPostExecute(List list) {
+            Log.d(TAG,"onPostExecuted:Param is" + list);
+            super.onPostExecute(list);
+        }
+
+        @Override
+        protected List doInBackground(String... strings) {
+            Log.d(TAG,"Arrived in do in background (Async Task)");
+            //getting data in background from link
+            InputStream input = null;
+            try {
+                Log.d(TAG,"do In Background: Starts download");
+                input = new URL("http://206.189.39.40:5000/static/cases.csv").openStream();
+                System.out.println("input"+input);
+            } catch (IOException e) {
+                Log.e(TAG, "download error");
+                e.printStackTrace();
+            }
+            //reading the data into input stream reader
+            Reader reader1 = null;
+            try {
+                reader1 = new InputStreamReader(input, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                Log.wtf("MainActivity","Line41");
+                e.printStackTrace();
+            }
+
+            BufferedReader reader = new BufferedReader(reader1);
+            List<Patientdata> patientsdata = new ArrayList<>();
+            String dataline;
+            StringBuilder problematicpeole = new StringBuilder("");
+            while (true) {
+                try {
+                    if (!((dataline = reader.readLine()) != null)) break;
+                    //split by ','
+                    String[] tokens = dataline.split(",");
+
+                    //read the data
+                    Context context = getBaseContext();
+                    SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
+                    Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
+
+                    if (query.moveToFirst()) { //means equals to true, no need to specify
+                        Log.d(TAG,"Querey-ing");
+                        do {
+                            String beaconid = query.getString(0);
+                            Integer occurrence = query.getInt(1);
+                            Double beacondist = query.getDouble(2);
+                            if(beaconid.equals(tokens[0])){ // never use string == string. Use string.equals(string) beaconid == tokens[0] is wrong
+                                Log.e(TAG,"Problem here. Confimed case" + patientsdata);
+                                //problematicpeole.append("\n" + beaconid + ":   " + occurrence + ":   " + beacondist + "m");
+                                Patientdata patientdata = new Patientdata(); //** Patient data is data for a single patient. Patients Data is data for all the close contact confirmed cases
+                                patientdata.setUuid(tokens[0]);
+                                patientdata.setSituation(tokens[1]);
+                                patientdata.setDate(tokens[2]);
+                                if (!Arrays.asList(patientsdata).contains(patientdata)){
+                                    patientsdata.add(patientdata);
+                                    System.out.println(patientsdata);
+                                    Log.e(TAG,"Close Contact Patients Data" + patientsdata);
+                                } else {
+                                    System.out.println("Already Recorded");
+                                };
+                            }
+                        } while (query.moveToNext());
+                    }
+                } catch (ArrayIndexOutOfBoundsException e){
+                    continue;
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //saving file to txt
+            savingcctotxt(patientsdata);
+
+            return patientsdata;
+        }
+    }
+
+    public void savingcctotxt(List patientsdata){
+        FileOutputStream fos = null;
+        try {
+            Context context = this;
+            String file_name = MainActivity.this.getFilesDir()
+                    .getAbsolutePath() + "/closecontacts.txt";
+            //fos = openFileOutput("closecontacts.txt", MODE_PRIVATE);
+
+            fos = new FileOutputStream(file_name,true);
+            //fos.write(text.getBytes());
+            String tobewrittendata;
+            tobewrittendata = "\n";
+            fos.write(tobewrittendata.getBytes());
+            tobewrittendata = patientsdata.toString();
+            fos.write(tobewrittendata.getBytes());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+
+    
 
 
 
