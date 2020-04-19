@@ -488,7 +488,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
             dbtextview.setText("lollol");
             //dbtextview.setText(datainstr);
-            //random
+     
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
