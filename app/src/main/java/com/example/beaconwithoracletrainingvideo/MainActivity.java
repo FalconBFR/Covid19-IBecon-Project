@@ -421,9 +421,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
             //MUST NOT DEBUG BY PRINTING OUT BR.READLINE() since it can only be done once
-            //System.out.println("423" + br.readLine());
-            //System.out.println("isthistxtnull427"+ (br.readLine()==null)+br.readLine());
-            //System.out.println(br.readLine()+"readinglinebro");
             String line;
             Boolean lastlinewasempty = false;
             Integer counter = 0;
@@ -455,55 +452,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         }
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
         dbtextview.setText(datainstr);
-
-        /*try {
-            //fis = openFileInput("closecontacts.txt");
-            File file = new File("closecontacts.txt");
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fis, cs);
-            BufferedReader br = new BufferedReader(isr);
-
-            String line;
-            while((line = br.readLine()) != null){
-                //process the line
-                System.out.println(line);
-            }
-            br.close();
-
-
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            //StringBuilder sb = new StringBuilder();
-            String displayingtext;
-
-            while ((displayingtext = br.readLine()) != null) {
-            //displayingtext = br.readLine();
-                datainstr.append(displayingtext).append("\n");
-                System.out.println("datainstr"+datainstr);
-            }
-
-            mEditText.setText(datainstr.toString());
-            System.out.println(datainstr.toString());// sb.toString is correct
-            System.out.println("+++++++++");
-            TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
-            dbtextview.setText("lollol");
-            //dbtextview.setText(datainstr);
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
-
 
     }
     public void transmitbeacon() {
