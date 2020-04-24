@@ -112,8 +112,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Turning On Bluetooth to avoid errors:
-        enableBT();
+
         //error due to api version issues. Debugger explains. Ignore for now. (Api 23 , API 21)
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1234); //check min api error
 
@@ -123,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         dbupdate = (Button)findViewById(R.id.dbupdate);
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
+            //Turning On Bluetooth to avoid errors:
+            enableBT();
             startService(new Intent (this, beaconservice.class));
             loaddbview(this);
         });
@@ -165,14 +166,23 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     }
 
+    //This methods asks the user's permission to turn on BT. We already have Bluetooth admin to control IBeacon. No need to ask for unnecesary permissinons
+    /*public void enableBT(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent intentBtEnabled = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                // The REQUEST_ENABLE_BT constant passed to startActivityForResult() is a locally defined integer (which must be greater than 0), that the system passes back to you in your onActivityResult()
+                // implementation as the requestCode parameter.
+                int REQUEST_ENABLE_BT = 1;
+                startActivityForResult(intentBtEnabled, REQUEST_ENABLE_BT);
+            }
+
+    }*/
+
     public void enableBT(){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!mBluetoothAdapter.isEnabled()){
-            Intent intentBtEnabled = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            // The REQUEST_ENABLE_BT constant passed to startActivityForResult() is a locally defined integer (which must be greater than 0), that the system passes back to you in your onActivityResult()
-            // implementation as the requestCode parameter.
-            int REQUEST_ENABLE_BT = 1;
-            startActivityForResult(intentBtEnabled, REQUEST_ENABLE_BT);
+            mBluetoothAdapter.enable();
         }
     }
 
@@ -244,7 +254,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         });
     }
 
-    public void startBeaconMonitoring() {
+    /*public void startBeaconMonitoring() {
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
         beaconManager.bind(this);
@@ -260,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     public Context getApplicationContext() {
@@ -273,7 +283,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         return super.getBaseContext();
     }
 
-    public void stopBeaconMonitoring() {
+    /*public void stopBeaconMonitoring() {
         Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
         System.out.println("Stop Beacon Monitoring");
         Log.d(TAG, "stopBeaconMonitoring called");
@@ -283,10 +293,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     //don't use, use saveCloseContacts2 instead
-    public void saveCloseContacts(Beacon beacon) {
+    /*public void saveCloseContacts(Beacon beacon) {
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //for testing purposes only
         //
@@ -322,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         }
         query.close();
         sqLiteDatabase.close();
-    }
+    }*/
 
     public void saveclosecontacts2(Beacon beacon, Double distance) {
         Identifier beaconid1; //beaconid1
@@ -474,6 +484,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         dbtextview.setText(datainstr);
 
     }
+
     public void transmitbeacon() {
         String BEACONUUID = autoload();
         System.out.println(BEACONUUID);
