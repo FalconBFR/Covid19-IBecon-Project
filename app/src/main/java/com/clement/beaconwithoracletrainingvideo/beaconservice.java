@@ -1,4 +1,4 @@
-package com.example.beaconwithoracletrainingvideo;
+package com.clement.beaconwithoracletrainingvideo;
 
 import android.app.Service;
 import android.content.Context;
@@ -225,27 +225,35 @@ public class beaconservice extends Service implements BeaconConsumer {
     }
 
     public void transmitbeacon() {
-        System.out.println("transmit-uno");
-        String BEACONUUID = autoload();
-        System.out.println(BEACONUUID);
-        System.out.println("transmit-dos");
-        //BEACONUUID = "10000000-0000-0000-0000-000000000000";
-        System.out.println("^^^^^^^");
-        Beacon beacon = new Beacon.Builder()
-                .setId1(BEACONUUID)
-                .setId2("1")
-                .setId3("2")
-                .setManufacturer(0x004c)
-                .setTxPower(-59)
-                .build();
-        System.out.println("transmit-tres");
-        BeaconParser beaconParser = new BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
-        System.out.println("transmit-quatro");
-        BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
-        System.out.println("transmit-cinco");
-        beaconTransmitter.startAdvertising(beacon);
-        System.out.println("transmit-seis");
+        try {
+            System.out.println("transmit-uno");
+            String BEACONUUID = autoload();
+            //if (BEACONUUID.length()!=36){
+            //BEACONUUID="00000000-0000-0000-0000-000000000000";
+            //}
+            System.out.println(BEACONUUID);
+            System.out.println("transmit-dos");
+            BEACONUUID = "10000000-0000-0000-0000-000000000000";
+            System.out.println("^^^^^^^");
+            System.out.println("BEACONUUIDEMERGENCY" + BEACONUUID);
+            Beacon beacon = new Beacon.Builder()
+                    .setId1(BEACONUUID)
+                    .setId2("1")
+                    .setId3("2")
+                    .setManufacturer(0x004c)
+                    .setTxPower(-59)
+                    .build();
+            System.out.println("transmit-tres");
+            BeaconParser beaconParser = new BeaconParser()
+                    .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
+            System.out.println("transmit-quatro");
+            BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
+            System.out.println("transmit-cinco");
+            beaconTransmitter.startAdvertising(beacon);
+            System.out.println("transmit-seis");
+        } catch (NullPointerException e){
+            Toast.makeText(this, "Bluetooth !!! Please Turn On Your Bluetooth!!!", Toast.LENGTH_LONG).show(); //often causes confusion. Made me debug for hours for twice already
+        }
     }
 
     public String autoload() {
@@ -283,10 +291,18 @@ public class beaconservice extends Service implements BeaconConsumer {
                 //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
                 fis.close();
                 System.out.println("here");
+            } catch (NullPointerException e){
+                //todo: Implement auto select UUID function
+                //for now just
+                BEACONUUID="2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //}
+        }
+        if(BEACONUUID.length()<36){
+            Log.d(TAG,"CRAP AUTOLOAD BACKUP UUID HAPPENED!!! THIS IS AMAZING");
+            BEACONUUID="00000000-0000-0000-0000-000000000000";
         }
         return BEACONUUID;
     }

@@ -1,4 +1,4 @@
-package com.example.beaconwithoracletrainingvideo;
+package com.clement.beaconwithoracletrainingvideo;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.example.beaconwithoracletrainingvideo;
+package com.clement.beaconwithoracletrainingvideo;
 
 public class Patientdata {
     private String uuid;

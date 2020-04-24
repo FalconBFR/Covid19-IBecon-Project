@@ -1,4 +1,4 @@
-package com.example.beaconwithoracletrainingvideo;
+package com.clement.beaconwithoracletrainingvideo;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,11 +8,13 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.app.Dialog;
 import android.app.IntentService;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -110,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Turning On Bluetooth to avoid errors:
+        enableBT();
         //error due to api version issues. Debugger explains. Ignore for now. (Api 23 , API 21)
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1234); //check min api error
 
@@ -125,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         System.out.println("OMGOMGOMG");
         //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
         stopButton.setOnClickListener((v) -> {
-            stopService(new Intent(this, beaconservice.class));
+            stopService(new Intent(this, com.clement.beaconwithoracletrainingvideo.beaconservice.class));
         });
 
         dbupdate.setOnClickListener((v) -> {
@@ -158,8 +162,19 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         DownoladData downloadData = new DownoladData();
         downloadData.execute("");
 
+
     }
 
+    public void enableBT(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!mBluetoothAdapter.isEnabled()){
+            Intent intentBtEnabled = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            // The REQUEST_ENABLE_BT constant passed to startActivityForResult() is a locally defined integer (which must be greater than 0), that the system passes back to you in your onActivityResult()
+            // implementation as the requestCode parameter.
+            int REQUEST_ENABLE_BT = 1;
+            startActivityForResult(intentBtEnabled, REQUEST_ENABLE_BT);
+        }
+    }
 
     @Override
     public void onBeaconServiceConnect() {
@@ -377,19 +392,24 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         BeaconService beaconService = new BeaconService();
         SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-        if (query.moveToFirst()) { //means equals to true, no need to specify
-            do {
-                String beaconid = query.getString(0);
-                Integer occurrence = query.getInt(1);
-                Double beacondist = query.getDouble(2);
-                StringBuilder concatbeaconid = new StringBuilder("");
-                //String concatbeaconid ="";
-                for (int characterno = 0; characterno < 5; characterno++) {
-                    concatbeaconid.append(beaconid.charAt(characterno));
-                }
-                dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondist + "m");
-            } while (query.moveToNext());
+        try {
+            Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
+            if (query.moveToFirst()) { //means equals to true, no need to specify
+                do {
+                    String beaconid = query.getString(0);
+                    Integer occurrence = query.getInt(1);
+                    Double beacondist = query.getDouble(2);
+                    StringBuilder concatbeaconid = new StringBuilder("");
+                    //String concatbeaconid ="";
+                    for (int characterno = 0; characterno < 5; characterno++) {
+                        concatbeaconid.append(beaconid.charAt(characterno));
+                    }
+                    dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondist + "m");
+                } while (query.moveToNext());
+
+            }
+        }catch(SQLiteException e) {
+            dbinstr.append("Welcome to the app Please Read the legal instructions"); //todo:legal instructions and quick start guide
         }
         //final String BEACONIDTXT = "beaconid.txt";
         //setContentView(R.layout.activity_main);
@@ -421,9 +441,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
             //MUST NOT DEBUG BY PRINTING OUT BR.READLINE() since it can only be done once
-            //System.out.println("423" + br.readLine());
-            //System.out.println("isthistxtnull427"+ (br.readLine()==null)+br.readLine());
-            //System.out.println(br.readLine()+"readinglinebro");
             String line;
             Boolean lastlinewasempty = false;
             Integer counter = 0;
@@ -455,55 +472,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         }
         TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
         dbtextview.setText(datainstr);
-
-        /*try {
-            //fis = openFileInput("closecontacts.txt");
-            File file = new File("closecontacts.txt");
-            FileInputStream fis = new FileInputStream(file);
-            InputStreamReader isr = new InputStreamReader(fis, cs);
-            BufferedReader br = new BufferedReader(isr);
-
-            String line;
-            while((line = br.readLine()) != null){
-                //process the line
-                System.out.println(line);
-            }
-            br.close();
-
-
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            //StringBuilder sb = new StringBuilder();
-            String displayingtext;
-
-            while ((displayingtext = br.readLine()) != null) {
-            //displayingtext = br.readLine();
-                datainstr.append(displayingtext).append("\n");
-                System.out.println("datainstr"+datainstr);
-            }
-
-            mEditText.setText(datainstr.toString());
-            System.out.println(datainstr.toString());// sb.toString is correct
-            System.out.println("+++++++++");
-            TextView dbtextview = (TextView) findViewById(R.id.dbtextview);
-            dbtextview.setText("lollol");
-            //dbtextview.setText(datainstr);
-
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }*/
-
 
     }
     public void transmitbeacon() {
@@ -668,7 +636,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
 
             BufferedReader reader = new BufferedReader(reader1);
-            List<Patientdata> patientsdata = new ArrayList<>();
+            List<com.clement.beaconwithoracletrainingvideo.Patientdata> patientsdata = new ArrayList<>();
             String dataline;
             StringBuilder problematicpeole = new StringBuilder("");
             while (true) {
@@ -691,7 +659,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                             if(beaconid.equals(tokens[0])){ // never use string == string. Use string.equals(string) beaconid == tokens[0] is wrong
                                 Log.e(TAG,"Problem here. Confimed case" + patientsdata);
                                 //problematicpeole.append("\n" + beaconid + ":   " + occurrence + ":   " + beacondist + "m");
-                                Patientdata patientdata = new Patientdata(); //** Patient data is data for a single patient. Patients Data is data for all the close contact confirmed cases
+                                com.clement.beaconwithoracletrainingvideo.Patientdata patientdata = new com.clement.beaconwithoracletrainingvideo.Patientdata(); //** Patient data is data for a single patient. Patients Data is data for all the close contact confirmed cases
                                 patientdata.setUuid(tokens[0]);
                                 patientdata.setSituation(tokens[1]);
                                 patientdata.setDate(tokens[2]);
@@ -705,6 +673,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                             }
                         } while (query.moveToNext());
                     }
+                }catch (SQLiteException e){
+                   break;
                 } catch (ArrayIndexOutOfBoundsException e){
                     continue;
                 }

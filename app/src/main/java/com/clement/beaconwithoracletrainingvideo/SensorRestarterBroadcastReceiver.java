@@ -1,4 +1,4 @@
-package com.example.beaconwithoracletrainingvideo;
+package com.clement.beaconwithoracletrainingvideo;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
