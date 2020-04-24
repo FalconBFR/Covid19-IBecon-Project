@@ -112,8 +112,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Turning On Bluetooth to avoid errors:
-        enableBT();
+
         //error due to api version issues. Debugger explains. Ignore for now. (Api 23 , API 21)
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1234); //check min api error
 
@@ -123,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         dbupdate = (Button)findViewById(R.id.dbupdate);
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
+            //Turning On Bluetooth to avoid errors:
+            enableBT();
             startService(new Intent (this, beaconservice.class));
             loaddbview(this);
         });
@@ -165,9 +166,9 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     }
 
-    public void enableBT(){
+    //This methods asks the user's permission to turn on BT. We already have Bluetooth admin to control IBeacon. No need to ask for unnecesary permissinons
+    /*public void enableBT(){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        while (!mBluetoothAdapter.isEnabled()) {
             if (!mBluetoothAdapter.isEnabled()) {
                 Intent intentBtEnabled = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 // The REQUEST_ENABLE_BT constant passed to startActivityForResult() is a locally defined integer (which must be greater than 0), that the system passes back to you in your onActivityResult()
@@ -175,13 +176,13 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 int REQUEST_ENABLE_BT = 1;
                 startActivityForResult(intentBtEnabled, REQUEST_ENABLE_BT);
             }
-            Toast.makeText(this,"Without Bluetooth, how are we going to detect who's near you?", Toast.LENGTH_LONG).show();
-            try {
-                Thread.sleep(7000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+    }*/
+
+    public void enableBT(){
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (!mBluetoothAdapter.isEnabled()){
+            mBluetoothAdapter.enable();
         }
     }
 
