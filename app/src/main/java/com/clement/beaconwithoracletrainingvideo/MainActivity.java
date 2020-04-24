@@ -167,12 +167,21 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     public void enableBT(){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        if (!mBluetoothAdapter.isEnabled()){
-            Intent intentBtEnabled = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-            // The REQUEST_ENABLE_BT constant passed to startActivityForResult() is a locally defined integer (which must be greater than 0), that the system passes back to you in your onActivityResult()
-            // implementation as the requestCode parameter.
-            int REQUEST_ENABLE_BT = 1;
-            startActivityForResult(intentBtEnabled, REQUEST_ENABLE_BT);
+        while (!mBluetoothAdapter.isEnabled()) {
+            if (!mBluetoothAdapter.isEnabled()) {
+                Intent intentBtEnabled = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                // The REQUEST_ENABLE_BT constant passed to startActivityForResult() is a locally defined integer (which must be greater than 0), that the system passes back to you in your onActivityResult()
+                // implementation as the requestCode parameter.
+                int REQUEST_ENABLE_BT = 1;
+                startActivityForResult(intentBtEnabled, REQUEST_ENABLE_BT);
+            }
+            Toast.makeText(this,"Without Bluetooth, how are we going to detect who's near you?", Toast.LENGTH_LONG).show();
+            try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         }
     }
 
@@ -244,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         });
     }
 
-    public void startBeaconMonitoring() {
+    /*public void startBeaconMonitoring() {
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
         beaconManager.bind(this);
@@ -260,7 +269,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     @Override
     public Context getApplicationContext() {
@@ -273,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         return super.getBaseContext();
     }
 
-    public void stopBeaconMonitoring() {
+    /*public void stopBeaconMonitoring() {
         Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
         System.out.println("Stop Beacon Monitoring");
         Log.d(TAG, "stopBeaconMonitoring called");
@@ -283,10 +292,10 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     //don't use, use saveCloseContacts2 instead
-    public void saveCloseContacts(Beacon beacon) {
+    /*public void saveCloseContacts(Beacon beacon) {
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         //for testing purposes only
         //
@@ -322,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         }
         query.close();
         sqLiteDatabase.close();
-    }
+    }*/
 
     public void saveclosecontacts2(Beacon beacon, Double distance) {
         Identifier beaconid1; //beaconid1
@@ -474,6 +483,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         dbtextview.setText(datainstr);
 
     }
+
     public void transmitbeacon() {
         String BEACONUUID = autoload();
         System.out.println(BEACONUUID);
