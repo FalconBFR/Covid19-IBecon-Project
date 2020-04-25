@@ -184,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
         return super.getBaseContext();
     }
 
-
     public void loaddbview(Context context) {
         //Context context = this.context;
         StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
@@ -274,7 +273,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     public void savefile(View v) {
         String text = mEditText.getText().toString();
         FileOutputStream fos = null;
@@ -335,43 +333,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-    }
-
-    public String autoload() {
-        String BEACONUUID = "";
-        FileInputStream fis = null;
-        try {
-            fis = openFileInput(BEACONIDTXT);
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String text;
-
-            while ((text = br.readLine()) != null) {
-                sb.append(text).append("\n");
-            }
-
-            mEditText.setText(sb.toString());
-            BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
-            BEACONUUID = BEACONUUID.replaceAll("\\s+", "");
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            //if (fis!= null){
-            try {
-                System.out.println("here1223");
-                //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
-                fis.close();
-                System.out.println("here");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //}
-        }
-        return BEACONUUID;
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -513,10 +474,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
-
-
-    
-
-
 
 }
