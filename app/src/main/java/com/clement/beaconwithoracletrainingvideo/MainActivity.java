@@ -50,9 +50,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +89,8 @@ public class MainActivity extends AppCompatActivity {
     Context basecontext = null;
 
     //main functions
+
+    //KEEP THIS SNIPPET PLEASE!
     public void ShowAlert(final String title, final String message) {
         runOnUiThread(() -> {
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
         });
     }
+    //DO NOT REMOVE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,9 +189,17 @@ public class MainActivity extends AppCompatActivity {
         return super.getBaseContext();
     }
 
+    public String datettimeprocessingselfwrite(long currenttimeinms){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd 'at' HH:MM");
+        Date date = new Date(currenttimeinms);
+        String time = simpleDateFormat.format(date);
+        Log.d("datetimeprocessing",time);
+        return time;
+    };
+
     public void loaddbview(Context context) {
         //Context context = this.context;
-        StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
+        StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence),Datetime ");
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         BeaconService beaconService = new BeaconService();
         SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -197,12 +210,24 @@ public class MainActivity extends AppCompatActivity {
                     String beaconid = query.getString(0);
                     Integer occurrence = query.getInt(1);
                     Double beacondist = query.getDouble(2);
+                    Long datetime = query.getLong(3);
+
+                    //processing beacondistance to round up
+                    Long beacondistprocessed = Math.round(beacondist);
+
+
+                    //processing Date and Time from MS since 1970 to a readable format
+                    String processeddatetime = datettimeprocessingselfwrite(datetime);
+
                     StringBuilder concatbeaconid = new StringBuilder("");
                     //String concatbeaconid ="";
+
+                    //to only get the first few digits of the UUID
                     for (int characterno = 0; characterno < 5; characterno++) {
                         concatbeaconid.append(beaconid.charAt(characterno));
                     }
-                    dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondist + "m");
+
+                    dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondistprocessed + "m  " + processeddatetime);
                 } while (query.moveToNext());
 
             }
@@ -373,6 +398,11 @@ public class MainActivity extends AppCompatActivity {
                 List<String> faileddownloaduserfeedback = new ArrayList<String>();
                 faileddownloaduserfeedback.add("!!!!!! ***** Check Your Internet Connection." +
                         " Or else, the server is currently down. Sorry for the inconvinience caused ****** !!!");
+                ShowAlert("Nothing to worry about but No Internet Connection/Server is Down "
+                        ,"Please continue to turn on this app. Again, let me repeat that we don't upload your data. However, " +
+                        "I don't know who is sick yet. Please let me repeat that this app will not detect every single close contact. " +
+                        "Take necessary precautions please. This is not a replacement for Social Distancing or any other measures you are " +
+                        "currently taking/asked by the goverment to take.");
                 savingcctotxt(faileddownloaduserfeedback);
                 return faileddownloaduserfeedback;
             }

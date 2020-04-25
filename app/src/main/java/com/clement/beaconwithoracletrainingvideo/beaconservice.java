@@ -34,7 +34,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
 public class beaconservice extends Service implements BeaconConsumer {
@@ -307,6 +311,44 @@ public class beaconservice extends Service implements BeaconConsumer {
         return BEACONUUID;
     }
 
+    /*public static String formatDateTime(Context context, String timeToFormat) {
+
+        String finalDateTime = "";
+
+        SimpleDateFormat iso8601Format = new SimpleDateFormat(
+                "yyyy-MM-dd HH:mm:ss");
+
+        Date date = null;
+        if (timeToFormat != null) {
+            try {
+                date = iso8601Format.parse(timeToFormat);
+            } catch (ParseException e) {
+                date = null;
+            }
+
+            if (date != null) {
+                long when = date.getTime();
+                int flags = 0;
+                flags |= android.text.format.DateUtils.FORMAT_SHOW_TIME;
+                flags |= android.text.format.DateUtils.FORMAT_SHOW_DATE;
+                flags |= android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
+                flags |= android.text.format.DateUtils.FORMAT_SHOW_YEAR;
+
+                finalDateTime = android.text.format.DateUtils.formatDateTime(context,
+                        when + TimeZone.getDefault().getOffset(when), flags);
+            }
+        }
+        return finalDateTime;
+    }*/
+
+    public String datettimeprocessingselfwrite(long currenttimeinms){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:MM");
+        Date date = new Date(currenttimeinms);
+        String time = simpleDateFormat.format(date);
+        Log.d("datetimeprocessing",time);
+        return time;
+    };
+
     public void saveclosecontacts2(Beacon beacon, Double distance) {
         System.out.println("savingtodb!In service! Yeah");
         Identifier beaconid1; //beaconid1
@@ -319,7 +361,7 @@ public class beaconservice extends Service implements BeaconConsumer {
         //
         //
 
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER, closestavgdist DOUBLE)"); //a table in the database named 'contacts' will be created if it does not exist
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER, closestavgdist DOUBLE, dateandtime TEXT)"); //a table in the database named 'contacts' will be created if it does not exist
         sqLiteDatabase.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_beaconid ON contacts(beaconid)");
 
         //declaring the variable 'tobeputinsql' as the variable to store the commands
@@ -356,8 +398,9 @@ public class beaconservice extends Service implements BeaconConsumer {
         //tobeputinsql = "UPDATE contacts SET occurrence = (occurrence + 50)";
         //" WHERE beaconid = '0ac59ca4-dfa6-442c-8c65-22247851344c'";
 
+        //formatDateTime(this, String.valueOf(System.currentTimeMillis()))
         int newoccurrence = occurrence + 1;
-        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance + ");";
+        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance + "," + System.currentTimeMillis() + ");";
         Log.d(TAG, "onCreate: sql is" + tobeputinsql);
         sqLiteDatabase.execSQL(tobeputinsql);
 
