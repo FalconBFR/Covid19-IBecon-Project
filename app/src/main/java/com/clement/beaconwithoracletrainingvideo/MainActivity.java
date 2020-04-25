@@ -626,6 +626,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
         @Override
         protected List doInBackground(String... strings) {
+            List<com.clement.beaconwithoracletrainingvideo.Patientdata> patientsdata = new ArrayList<>();
             Log.d(TAG,"Arrived in do in background (Async Task)");
             //getting data in background from link
             InputStream input = null;
@@ -634,8 +635,15 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 input = new URL("http://206.189.39.40:5000/static/cases.csv").openStream();
                 System.out.println("input"+input);
             } catch (IOException e) {
+                //todo: A better feedback to the user about the issue of lack of internet connection
+                //Means that the server is either down or the user doesn't have internet connection
                 Log.e(TAG, "download error");
-                e.printStackTrace();
+                //e.printStackTrace();
+                List<String> faileddownloaduserfeedback = new ArrayList<String>();
+                faileddownloaduserfeedback.add("!!!!!! ***** Check Your Internet Connection." +
+                        " Or else, the server is currently down. Sorry for the inconvinience caused ****** !!!");
+                savingcctotxt(faileddownloaduserfeedback);
+                return faileddownloaduserfeedback;
             }
             //reading the data into input stream reader
             Reader reader1 = null;
@@ -647,7 +655,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
 
             BufferedReader reader = new BufferedReader(reader1);
-            List<com.clement.beaconwithoracletrainingvideo.Patientdata> patientsdata = new ArrayList<>();
             String dataline;
             StringBuilder problematicpeole = new StringBuilder("");
             while (true) {
