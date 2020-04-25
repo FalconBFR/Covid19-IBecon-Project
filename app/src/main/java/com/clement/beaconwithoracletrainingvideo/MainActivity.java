@@ -50,16 +50,18 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity implements BeaconConsumer {
+public class MainActivity extends AppCompatActivity {
 
     //initialize
     private static final String TAG = "MainActivity";
@@ -87,6 +89,8 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
     Context basecontext = null;
 
     //main functions
+
+    //KEEP THIS SNIPPET PLEASE!
     public void ShowAlert(final String title, final String message) {
         runOnUiThread(() -> {
             AlertDialog alertDialog = new AlertDialog.Builder(MainActivity.this).create();
@@ -98,6 +102,7 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             alertDialog.show();
         });
     }
+    //DO NOT REMOVE
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -166,111 +171,12 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     }
 
-    //This methods asks the user's permission to turn on BT. We already have Bluetooth admin to control IBeacon. No need to ask for unnecesary permissinons
-    /*public void enableBT(){
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (!mBluetoothAdapter.isEnabled()) {
-                Intent intentBtEnabled = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                // The REQUEST_ENABLE_BT constant passed to startActivityForResult() is a locally defined integer (which must be greater than 0), that the system passes back to you in your onActivityResult()
-                // implementation as the requestCode parameter.
-                int REQUEST_ENABLE_BT = 1;
-                startActivityForResult(intentBtEnabled, REQUEST_ENABLE_BT);
-            }
-
-    }*/
-
     public void enableBT(){
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (!mBluetoothAdapter.isEnabled()){
             mBluetoothAdapter.enable();
         }
     }
-
-    @Override
-    public void onBeaconServiceConnect() {
-        Log.d(TAG, "onBeaconServiceConnect called");
-
-        beaconManager.setMonitorNotifier(new MonitorNotifier() {
-            @Override
-            public void didEnterRegion(Region region) {
-                System.out.println("DID ENTER REGION");
-                //if (!entryMessageRaised) {
-                //todo: change logic later
-                ShowAlert("did Enter Region", "Entering Region" + region.getUniqueId() +
-                        "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
-                //entryMessageRaised = true;
-                //}
-                //this is how you acess beacon  - System.out.println(beaconreal.getId1());
-            }
-
-            @Override
-            public void didExitRegion(Region region) {
-                System.out.println("DID EXIT REGION");
-                //if (!exitMessageRaised) {
-                //todo: change logic later
-                ShowAlert("did Exit Region", "Exiting Region" + region.getUniqueId() +
-                        "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
-                //System.out.println(beaconRegion.getId1());
-                //System.out.println(beacon.get);
-                //System.out.println(beacon.getid1);
-                //exitMessageRaised = true;
-                //}
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int i, Region region) {
-
-            }
-        });
-
-        beaconManager.setRangeNotifier(new RangeNotifier() {
-            @Override
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                //if(!rangingMessageRaised && beacons != null && !beacons.isEmpty()) {
-                //if(!beacons.isEmpty()){
-                for (Beacon beacon : beacons) {
-                    //ShowAlert("didExitRangeRegion", "Ranging region" + region.getUniqueId() +
-                    //      " Beacon detected UUID/major/minor:" + beacon.getId1() + "/" +
-                    //    beacon.getId2() + "/" + beacon.getId3());
-                    //pubbeacon = beacon;
-                    Double beacondist = beacons.iterator().next().getDistance();
-                    Log.d(TAG, "didRangeBeaconsInRegion:" + beacondist + beacon);
-                    ;
-                    Log.d(TAG, "writing to database");
-                    saveclosecontacts2(beacon, beacondist);
-                    Log.d(TAG, "writing to databse complete");
-                    //public pubbeacon = beacon.getId1();
-                    //getClass(beacon);
-                    //Region beaconRegionactual = new Region("MyBeaconStuff", beacon.getId1(), beacon.getId2(), beacon.getId3());
-                    //}
-                    System.out.println(beacons.isEmpty());
-                    //rangingMessageRaised = true;
-                    //beaconreal = beacon;
-                    //}
-
-                }
-
-            }
-        });
-    }
-
-    /*public void startBeaconMonitoring() {
-        beaconManager = BeaconManager.getInstanceForApplication(this);
-        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
-        beaconManager.bind(this);
-        Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
-        System.out.println(beaconRegion);
-        Log.d(TAG, "startBeaconMonitoring called");
-        System.out.println("START BEACON MONITORING FUNCTION");
-        try {
-            System.out.println(beaconRegion);
-            beaconManager.startMonitoringBeaconsInRegion(beaconRegion);
-            beaconManager.startRangingBeaconsInRegion(beaconRegion);
-            transmitbeacon();
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }*/
 
     @Override
     public Context getApplicationContext() {
@@ -283,122 +189,17 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         return super.getBaseContext();
     }
 
-    /*public void stopBeaconMonitoring() {
-        Region beaconRegion = new Region("MyBeaconStuff", null, null, null);
-        System.out.println("Stop Beacon Monitoring");
-        Log.d(TAG, "stopBeaconMonitoring called");
-        try {
-            beaconManager.stopMonitoringBeaconsInRegion(beaconRegion);
-            beaconManager.stopRangingBeaconsInRegion(beaconRegion);
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    //don't use, use saveCloseContacts2 instead
-    /*public void saveCloseContacts(Beacon beacon) {
-        SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
-        //for testing purposes only
-        //
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
-        //
-        //
-
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
-        String tobeputinsql;
-        Identifier beaconid1; //beaconid1
-        beaconid1 = beacon.getId1();
-        String beaconidstr = beaconid1.toString();
-        beaconidstr = "'" + beaconidstr + "'";
-
-
-        tobeputinsql = "INSERT INTO contacts VALUES(" + beaconidstr + ", 1);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
-        Log.d(TAG, "onCreate: sql is" + tobeputinsql);
-        sqLiteDatabase.execSQL(tobeputinsql);
-
-        //just for development purposes, to confirm it is written to the DB
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-        if (query.moveToFirst()) { //means equals to true, no need to specify
-            do {
-                String name = query.getString(0);
-                int phone = query.getInt(1);
-                //String email = query.getString(2);
-                Toast.makeText(this, "SAVED TO DATABASE " +
-                        "BluetoothID =" + name + " occurrence " + phone, Toast.LENGTH_LONG).show();
-
-            } while (query.moveToNext());
-
-
-        }
-        query.close();
-        sqLiteDatabase.close();
-    }*/
-
-    public void saveclosecontacts2(Beacon beacon, Double distance) {
-        Identifier beaconid1; //beaconid1
-        int occurrence = 0; // initalize
-        SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
-
-        //for testing purposes only
-        //
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
-        //
-        //
-
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER, closestavgdist DOUBLE)"); //a table in the database named 'contacts' will be created if it does not exist
-        sqLiteDatabase.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_beaconid ON contacts(beaconid)");
-
-        //declaring the variable 'tobeputinsql' as the variable to store the commands
-        String tobeputinsql;
-
-        //formating the beaconid1 value for the database, can be simplified later
-        beaconid1 = beacon.getId1();
-        String beaconidstr = beaconid1.toString();
-        String bidnoquotes = beaconidstr;
-        beaconidstr = "'" + beaconidstr + "'";
-
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-
-        if (query.moveToFirst()) { //means equals to true, no need to specify
-            do {
-                String beaconid = query.getString(0);
-
-                if (beaconid.equals(bidnoquotes)) {
-                    occurrence = query.getInt(1);
-                    Double distanceprevious = query.getDouble(2);
-                    if (distance > distanceprevious) {
-                        distance = distanceprevious;
-                    }
-                    Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
-                            "BluetoothID =" + beaconid + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
-                }
-            } while (query.moveToNext());
-        }
-
-        //saving values to DB
-        //tobeputinsql = "INSERT OR IGNORE INTO contacts VALUES(" + beaconidstr + ", 0);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
-        //sqLiteDatabase.execSQL(tobeputinsql);
-        //tobeputinsql = "UPDATE contacts SET occurrence = occurrence + 1";
-        //tobeputinsql = "UPDATE contacts SET occurrence = (occurrence + 50)";
-        //" WHERE beaconid = '0ac59ca4-dfa6-442c-8c65-22247851344c'";
-
-        int newoccurrence = occurrence + 1;
-        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance + ");";
-        Log.d(TAG, "onCreate: sql is" + tobeputinsql);
-        sqLiteDatabase.execSQL(tobeputinsql);
-
-        //stopping query
-        query.close();
-        sqLiteDatabase.close();
-
-        //loaddbview(this);
-
-    }
-    //
+    public String datettimeprocessingselfwrite(long currenttimeinms){
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd 'at' HH:MM");
+        Date date = new Date(currenttimeinms);
+        String time = simpleDateFormat.format(date);
+        Log.d("datetimeprocessing",time);
+        return time;
+    };
 
     public void loaddbview(Context context) {
         //Context context = this.context;
-        StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
+        StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence),Datetime ");
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         BeaconService beaconService = new BeaconService();
         SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -409,12 +210,24 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                     String beaconid = query.getString(0);
                     Integer occurrence = query.getInt(1);
                     Double beacondist = query.getDouble(2);
+                    Long datetime = query.getLong(3);
+
+                    //processing beacondistance to round up
+                    Long beacondistprocessed = Math.round(beacondist);
+
+
+                    //processing Date and Time from MS since 1970 to a readable format
+                    String processeddatetime = datettimeprocessingselfwrite(datetime);
+
                     StringBuilder concatbeaconid = new StringBuilder("");
                     //String concatbeaconid ="";
+
+                    //to only get the first few digits of the UUID
                     for (int characterno = 0; characterno < 5; characterno++) {
                         concatbeaconid.append(beaconid.charAt(characterno));
                     }
-                    dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondist + "m");
+
+                    dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondistprocessed + "m  " + processeddatetime);
                 } while (query.moveToNext());
 
             }
@@ -485,26 +298,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
 
     }
 
-    public void transmitbeacon() {
-        String BEACONUUID = autoload();
-        System.out.println(BEACONUUID);
-        //BEACONUUID = "10000000-0000-0000-0000-000000000000";
-        System.out.println("^^^^^^^");
-        Beacon beacon = new Beacon.Builder()
-                .setId1(BEACONUUID)
-                .setId2("1")
-                .setId3("2")
-                .setManufacturer(0x004c)
-                .setTxPower(-59)
-                .build();
-        BeaconParser beaconParser = new BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
-        BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
-        beaconTransmitter.startAdvertising(beacon);
-    }
-
-    //public void setBeaconTransID(){
-
     public void savefile(View v) {
         String text = mEditText.getText().toString();
         FileOutputStream fos = null;
@@ -567,43 +360,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         }
     }
 
-    public String autoload() {
-        String BEACONUUID = "";
-        FileInputStream fis = null;
-        try {
-            fis = openFileInput(BEACONIDTXT);
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader br = new BufferedReader(isr);
-            StringBuilder sb = new StringBuilder();
-            String text;
-
-            while ((text = br.readLine()) != null) {
-                sb.append(text).append("\n");
-            }
-
-            mEditText.setText(sb.toString());
-            BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
-            BEACONUUID = BEACONUUID.replaceAll("\\s+", "");
-
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            //if (fis!= null){
-            try {
-                System.out.println("here1223");
-                //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
-                fis.close();
-                System.out.println("here");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            //}
-        }
-        return BEACONUUID;
-    }
-
     private boolean isMyServiceRunning(Class<?> serviceClass) {
         @SuppressLint({"NewApi", "LocalSuppress"}) ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -642,6 +398,11 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
                 List<String> faileddownloaduserfeedback = new ArrayList<String>();
                 faileddownloaduserfeedback.add("!!!!!! ***** Check Your Internet Connection." +
                         " Or else, the server is currently down. Sorry for the inconvinience caused ****** !!!");
+                ShowAlert("Nothing to worry about but No Internet Connection/Server is Down "
+                        ,"Please continue to turn on this app. Again, let me repeat that we don't upload your data. However, " +
+                        "I don't know who is sick yet. Please let me repeat that this app will not detect every single close contact. " +
+                        "Take necessary precautions please. This is not a replacement for Social Distancing or any other measures you are " +
+                        "currently taking/asked by the goverment to take.");
                 savingcctotxt(faileddownloaduserfeedback);
                 return faileddownloaduserfeedback;
             }
@@ -743,10 +504,5 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
             }
         }
     };
-
-
-    
-
-
 
 }
