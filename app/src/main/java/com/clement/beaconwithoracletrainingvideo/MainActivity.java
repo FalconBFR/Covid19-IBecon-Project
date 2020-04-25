@@ -59,7 +59,7 @@ import java.util.Map;
 import java.util.Objects;
 
 
-public class MainActivity extends AppCompatActivity implements BeaconConsumer {
+public class MainActivity extends AppCompatActivity {
 
     //initialize
     private static final String TAG = "MainActivity";
@@ -171,74 +171,6 @@ public class MainActivity extends AppCompatActivity implements BeaconConsumer {
         if (!mBluetoothAdapter.isEnabled()){
             mBluetoothAdapter.enable();
         }
-    }
-
-    @Override
-    public void onBeaconServiceConnect() {
-        Log.d(TAG, "onBeaconServiceConnect called");
-
-        beaconManager.setMonitorNotifier(new MonitorNotifier() {
-            @Override
-            public void didEnterRegion(Region region) {
-                System.out.println("DID ENTER REGION");
-                //if (!entryMessageRaised) {
-                //todo: change logic later
-                ShowAlert("did Enter Region", "Entering Region" + region.getUniqueId() +
-                        "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
-                //entryMessageRaised = true;
-                //}
-                //this is how you acess beacon  - System.out.println(beaconreal.getId1());
-            }
-
-            @Override
-            public void didExitRegion(Region region) {
-                System.out.println("DID EXIT REGION");
-                //if (!exitMessageRaised) {
-                //todo: change logic later
-                ShowAlert("did Exit Region", "Exiting Region" + region.getUniqueId() +
-                        "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
-                //System.out.println(beaconRegion.getId1());
-                //System.out.println(beacon.get);
-                //System.out.println(beacon.getid1);
-                //exitMessageRaised = true;
-                //}
-            }
-
-            @Override
-            public void didDetermineStateForRegion(int i, Region region) {
-
-            }
-        });
-
-        beaconManager.setRangeNotifier(new RangeNotifier() {
-            @Override
-            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
-                //if(!rangingMessageRaised && beacons != null && !beacons.isEmpty()) {
-                //if(!beacons.isEmpty()){
-                for (Beacon beacon : beacons) {
-                    //ShowAlert("didExitRangeRegion", "Ranging region" + region.getUniqueId() +
-                    //      " Beacon detected UUID/major/minor:" + beacon.getId1() + "/" +
-                    //    beacon.getId2() + "/" + beacon.getId3());
-                    //pubbeacon = beacon;
-                    Double beacondist = beacons.iterator().next().getDistance();
-                    Log.d(TAG, "didRangeBeaconsInRegion:" + beacondist + beacon);
-                    ;
-                    Log.d(TAG, "writing to database");
-                    saveclosecontacts2(beacon, beacondist);
-                    Log.d(TAG, "writing to databse complete");
-                    //public pubbeacon = beacon.getId1();
-                    //getClass(beacon);
-                    //Region beaconRegionactual = new Region("MyBeaconStuff", beacon.getId1(), beacon.getId2(), beacon.getId3());
-                    //}
-                    System.out.println(beacons.isEmpty());
-                    //rangingMessageRaised = true;
-                    //beaconreal = beacon;
-                    //}
-
-                }
-
-            }
-        });
     }
 
     @Override
