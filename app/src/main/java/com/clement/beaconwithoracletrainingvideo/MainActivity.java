@@ -185,68 +185,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void saveclosecontacts2(Beacon beacon, Double distance) {
-        Identifier beaconid1; //beaconid1
-        int occurrence = 0; // initalize
-        SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
-
-        //for testing purposes only
-        //
-        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
-        //
-        //
-
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER, closestavgdist DOUBLE)"); //a table in the database named 'contacts' will be created if it does not exist
-        sqLiteDatabase.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_beaconid ON contacts(beaconid)");
-
-        //declaring the variable 'tobeputinsql' as the variable to store the commands
-        String tobeputinsql;
-
-        //formating the beaconid1 value for the database, can be simplified later
-        beaconid1 = beacon.getId1();
-        String beaconidstr = beaconid1.toString();
-        String bidnoquotes = beaconidstr;
-        beaconidstr = "'" + beaconidstr + "'";
-
-        Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-
-        if (query.moveToFirst()) { //means equals to true, no need to specify
-            do {
-                String beaconid = query.getString(0);
-
-                if (beaconid.equals(bidnoquotes)) {
-                    occurrence = query.getInt(1);
-                    Double distanceprevious = query.getDouble(2);
-                    if (distance > distanceprevious) {
-                        distance = distanceprevious;
-                    }
-                    Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
-                            "BluetoothID =" + beaconid + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
-                }
-            } while (query.moveToNext());
-        }
-
-        //saving values to DB
-        //tobeputinsql = "INSERT OR IGNORE INTO contacts VALUES(" + beaconidstr + ", 0);"; //works like a charm: https://stackoverflow.com/a/12472295/10949995
-        //sqLiteDatabase.execSQL(tobeputinsql);
-        //tobeputinsql = "UPDATE contacts SET occurrence = occurrence + 1";
-        //tobeputinsql = "UPDATE contacts SET occurrence = (occurrence + 50)";
-        //" WHERE beaconid = '0ac59ca4-dfa6-442c-8c65-22247851344c'";
-
-        int newoccurrence = occurrence + 1;
-        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance + ");";
-        Log.d(TAG, "onCreate: sql is" + tobeputinsql);
-        sqLiteDatabase.execSQL(tobeputinsql);
-
-        //stopping query
-        query.close();
-        sqLiteDatabase.close();
-
-        //loaddbview(this);
-
-    }
-    //
-
     public void loaddbview(Context context) {
         //Context context = this.context;
         StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence) ");
@@ -336,23 +274,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void transmitbeacon() {
-        String BEACONUUID = autoload();
-        System.out.println(BEACONUUID);
-        //BEACONUUID = "10000000-0000-0000-0000-000000000000";
-        System.out.println("^^^^^^^");
-        Beacon beacon = new Beacon.Builder()
-                .setId1(BEACONUUID)
-                .setId2("1")
-                .setId3("2")
-                .setManufacturer(0x004c)
-                .setTxPower(-59)
-                .build();
-        BeaconParser beaconParser = new BeaconParser()
-                .setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24");
-        BeaconTransmitter beaconTransmitter = new BeaconTransmitter(getApplicationContext(), beaconParser);
-        beaconTransmitter.startAdvertising(beacon);
-    }
 
     public void savefile(View v) {
         String text = mEditText.getText().toString();
