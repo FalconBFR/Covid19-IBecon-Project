@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -32,12 +33,19 @@ import org.altbeacon.beacon.Region;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
@@ -237,9 +245,7 @@ public class beaconservice extends Service implements BeaconConsumer {
             //}
             System.out.println(BEACONUUID);
             System.out.println("transmit-dos");
-            BEACONUUID = "10000000-0000-0000-0000-000000000000";
-            System.out.println("^^^^^^^");
-            System.out.println("BEACONUUIDEMERGENCY" + BEACONUUID);
+            //BEACONUUID = "10000000-0000-0000-0000-000000000000";
             Beacon beacon = new Beacon.Builder()
                     .setId1(BEACONUUID)
                     .setId2("1")
@@ -285,61 +291,36 @@ public class beaconservice extends Service implements BeaconConsumer {
             System.out.println("+++++++++");
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            //Implement cannot find UUID function:
+            //Only here just in case the user did something to the file to avoid a crash
+            //This really shouldn't happen :(
+            System.out.println("FNF e");
+            Log.e("beaconservice","CanotFindUUID.txt file. Running choose uuid and saving from server");
+            NewUUID newUUID = new NewUUID();
+            newUUID.execute("");
+            autoload(); //run the function again since the UUID needs to be loaded into the system
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             //if (fis!= null){
             try {
-                System.out.println("here1223");
                 //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
                 fis.close();
-                System.out.println("here");
             } catch (NullPointerException e){
-                //todo: Implement auto select UUID function
-                //for now just
-                BEACONUUID="2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
+                //another spot to implement UUID not found function but I am choosing another place to run the newuuid func
+                Log.d("beaconservice","This should not happen! in autoload function Null Pointer Exception e. Should be rulled out by FNe");
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //}
         }
         if(BEACONUUID.length()<36){
-            Log.d(TAG,"CRAP AUTOLOAD BACKUP UUID HAPPENED!!! THIS IS AMAZING");
-            BEACONUUID="00000000-0000-0000-0000-000000000000";
+            //beacon id is some how messed up
+            Log.d(TAG,"CRAP AUTOLOAD BACKUP UUID HAPPENED!!! No Failsafe funciton written for this");
+
         }
         return BEACONUUID;
     }
-
-    /*public static String formatDateTime(Context context, String timeToFormat) {
-
-        String finalDateTime = "";
-
-        SimpleDateFormat iso8601Format = new SimpleDateFormat(
-                "yyyy-MM-dd HH:mm:ss");
-
-        Date date = null;
-        if (timeToFormat != null) {
-            try {
-                date = iso8601Format.parse(timeToFormat);
-            } catch (ParseException e) {
-                date = null;
-            }
-
-            if (date != null) {
-                long when = date.getTime();
-                int flags = 0;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_TIME;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_DATE;
-                flags |= android.text.format.DateUtils.FORMAT_ABBREV_MONTH;
-                flags |= android.text.format.DateUtils.FORMAT_SHOW_YEAR;
-
-                finalDateTime = android.text.format.DateUtils.formatDateTime(context,
-                        when + TimeZone.getDefault().getOffset(when), flags);
-            }
-        }
-        return finalDateTime;
-    }*/
 
     public String datettimeprocessingselfwrite(long currenttimeinms){
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:MM");
@@ -412,6 +393,82 @@ public class beaconservice extends Service implements BeaconConsumer {
 
         //loaddbview();
 
+    }
+
+    public void savinguuidtotxt(String newuuid){
+        FileOutputStream fos = null;
+        try {
+            Context context = this;
+            String file_name = this.getFilesDir()
+                    .getAbsolutePath() + "/beaconid.txt";
+            //fos = openFileOutput("closecontacts.txt", MODE_PRIVATE);
+
+            fos = new FileOutputStream(file_name,false);
+            fos.write(newuuid.getBytes());
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+    private class NewUUID extends AsyncTask<String,Void, List> {
+        private static final String TAG = "DownloadedData";
+        @Override
+        protected void onPostExecute(List list) {
+            Log.d(TAG,"onPostExecuted:Param is" + list);
+            super.onPostExecute(list);
+        }
+
+        @Override
+        protected List doInBackground(String... strings) {
+            List<com.clement.beaconwithoracletrainingvideo.Patientdata> patientsdata = new ArrayList<>();
+            Log.d(TAG,"Arrived in do in background (Async Task)");
+            //getting data in background from link
+            InputStream input = null;
+            try {
+                Log.d(TAG,"do In Background: NEWUUID!!!!!!!!!");
+                input = new URL("http://206.189.39.40:5000/uuid/new").openStream();
+                System.out.println("new uuid buffer input"+input);
+            } catch (IOException e) {
+                //todo: A better feedback to the user about the issue of lack of internet connection
+                //Means that the server is either down or the user doesn't have internet connection
+                Log.e(TAG, "download error");
+                //e.printStackTrace();
+                List<String> faileddownloaduserfeedback = new ArrayList<String>();
+                return faileddownloaduserfeedback; //is empty
+            }
+            //reading the data into input stream reader
+            Reader reader1 = null;
+            try {
+                reader1 = new InputStreamReader(input, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                Log.wtf("NewUUID","Line547");
+                e.printStackTrace();
+            }
+
+            BufferedReader reader = new BufferedReader(reader1);
+            String dataline = null;
+            //StringBuilder problematicpeole = new StringBuilder("");
+            try {
+                dataline = reader.readLine();
+                System.out.println("newuuid dataline!!!" + dataline);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //saving file to txt
+            savinguuidtotxt(dataline);
+
+            return patientsdata;
+        }
     }
 }
 

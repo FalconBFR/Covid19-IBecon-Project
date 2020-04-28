@@ -505,4 +505,140 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    private class NewUUID extends AsyncTask<String,Void, List> {
+        private static final String TAG = "DownloadedData";
+        @Override
+        protected void onPostExecute(List list) {
+            Log.d(TAG,"onPostExecuted:Param is" + list);
+            super.onPostExecute(list);
+        }
+
+        @Override
+        protected List doInBackground(String... strings) {
+            List<com.clement.beaconwithoracletrainingvideo.Patientdata> patientsdata = new ArrayList<>();
+            Log.d(TAG,"Arrived in do in background (Async Task)");
+            //getting data in background from link
+            InputStream input = null;
+            try {
+                Log.d(TAG,"do In Background: NEWUUID!!!!!!!!!");
+                input = new URL("http://206.189.39.40:5000/uuid/new").openStream();
+                System.out.println("new uuid buffer input"+input);
+            } catch (IOException e) {
+                //todo: A better feedback to the user about the issue of lack of internet connection
+                //Means that the server is either down or the user doesn't have internet connection
+                Log.e(TAG, "download error");
+                //e.printStackTrace();
+                List<String> faileddownloaduserfeedback = new ArrayList<String>();
+                faileddownloaduserfeedback.add("!!!!!! ***** Check Your Internet Connection." +
+                        " Or else, the server is currently down. Sorry for the inconvinience caused ****** !!!");
+                ShowAlert("Nothing to worry about but No Internet Connection/Server is Down "
+                        ,"Please try to ensure that internet connection can be guranteed and " +
+                                "be patient while we solve this technical issue. Many thanks.");
+                return faileddownloaduserfeedback;
+            }
+            //reading the data into input stream reader
+            Reader reader1 = null;
+            try {
+                reader1 = new InputStreamReader(input, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                Log.wtf("NewUUID","Line547");
+                e.printStackTrace();
+            }
+
+            BufferedReader reader = new BufferedReader(reader1);
+            String dataline = null;
+            //StringBuilder problematicpeole = new StringBuilder("");
+            try {
+                dataline = reader.readLine();
+                System.out.println("newuuid dataline!!!" + dataline);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //saving file to txt
+            savinguuidtotxt(dataline);
+
+            return patientsdata;
+        }
+
+        void savinguuidtotxt(String newuuid){
+            FileOutputStream fos = null;
+            try {
+                Context context = MainActivity.this;
+                String file_name = MainActivity.this.getFilesDir()
+                        .getAbsolutePath() + "/beaconid.txt";
+                //fos = openFileOutput("closecontacts.txt", MODE_PRIVATE);
+
+                fos = new FileOutputStream(file_name,false);
+                fos.write(newuuid.getBytes());
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }finally {
+                if (fos != null) {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+    }
+
+    public String autoloadtocheckuuid() {
+        // Function is Existant beacuse it is for first time users
+        String BEACONUUID = "";
+        FileInputStream fis = null;
+        try {
+            fis = openFileInput(BEACONIDTXT);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+
+            while ((text = br.readLine()) != null) {
+                sb.append(text).append("\n");
+            }
+
+            //mEditText.setText(sb.toString());
+            BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
+            //System.out.println("\nheyhey");
+            //System.out.println(sb.toString());// sb.toString is correct
+            //System.out.println("10000000-0000-0000-0000-000000000000");
+            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
+            BEACONUUID = BEACONUUID.replaceAll("\\s+", "");
+            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
+            System.out.println("+++++++++");
+
+        } catch (FileNotFoundException e) {
+            //Implement cannot find UUID function:
+            System.out.println("FNF e");
+            Log.e("beaconservice","CanotFindUUID.txt file. Running choose uuid and saving from server");
+            NewUUID newUUID = new NewUUID();
+            newUUID.execute("");
+            autoloadtocheckuuid(); //run the function again since the UUID needs to be loaded into the system
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            //if (fis!= null){
+            try {
+                //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
+                fis.close();
+            } catch (NullPointerException e){
+                //another spot to implement UUID not found function but I am choosing another place to run the newuuid func
+                Log.d("beaconservice","This should not happen! in autoload function Null Pointer Exception e. Should be rulled out by FNe");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            //}
+        }
+        if(BEACONUUID.length()<36){
+            //beacon id is some how messed up
+            Log.d(TAG,"CRAP AUTOLOAD BACKUP UUID HAPPENED!!! THIS IS AMAZING");
+            //BEACONUUID="00000000-0000-0000-0000-000000000000";
+
+        }
+        return BEACONUUID;
+    }
 }
