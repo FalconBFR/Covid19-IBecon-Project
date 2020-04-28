@@ -1,6 +1,7 @@
+#!/usr/bin/python3
 import os.path
-import numpy as np
-import cv2
+#import numpy as np
+#import cv2
 from flask import Flask,request,Response
 import uuid
 import json
@@ -28,9 +29,9 @@ def csvUpdater(patientdata):
     status = patientdata.getsituation()
     uuid = patientdata.getuuid()
     date = patientdata.getdate()
-    with open('static/cases.csv', 'a') as csvfile:
+    with open('static/cases.csv', 'w') as csvfile:
         writer = csv.writer(csvfile)
-        #writer.writerow(['uuid','statuslog','datalog'])
+        writer.writerow(['uuid','statuslog','datalog'])
         writer.writerow([uuid,status,date])
     return True
 
@@ -56,4 +57,4 @@ if __name__ == "__main__":
   app.run(debug=True)
 
 #start server
-app.run(host="0.0.0.0",port=5000,debug=True)
+app.run(host="0.0.0.0",port=80,debug=True)
