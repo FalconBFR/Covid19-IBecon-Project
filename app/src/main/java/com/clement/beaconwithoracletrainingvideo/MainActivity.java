@@ -127,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
         dbupdate = (Button)findViewById(R.id.dbupdate);
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
+            //making sure that a UUID is present, else: grabbing one from server
+            autoloadtocheckuuid();
             //Turning On Bluetooth to avoid errors:
             enableBT();
             startService(new Intent (this, beaconservice.class));
