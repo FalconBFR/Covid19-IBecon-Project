@@ -1,4 +1,7 @@
 <resources>
-    <string name="app_name">BeaconTransmittionandDetection-Covid19</string>
+    <string name="app_name">BeaconTransmittionandDetection</string>
     <string name="textview">dbtextview</string>
+    <string name="servicerunning">Clement\'s Beacon </string>
+    <string name="local_service_started">Recording your close contacts</string>
+    <string name="servicerunningnote">Detecting your close contacts</string>
 </resources>
