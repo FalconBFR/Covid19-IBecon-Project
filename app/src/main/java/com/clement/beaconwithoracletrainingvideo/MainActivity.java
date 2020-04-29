@@ -85,6 +85,8 @@ public class MainActivity extends AppCompatActivity {
     //UUID management
     final String BEACONIDTXT = "beaconid.txt";
     EditText mEditText;
+    TextView yourassigneduuid;
+
 
     Context basecontext = null;
 
@@ -142,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
         dbupdate.setOnClickListener((v) -> {
             loaddbview(this);
+            loaduuid();
         });
 
         loadtheill.setOnClickListener((v) -> {
@@ -160,7 +163,8 @@ public class MainActivity extends AppCompatActivity {
         //sqLiteDatabase.execSQL
 
         //related to the UUID TExt Box Below
-        mEditText = findViewById(R.id.edit_text);
+        //mEditText = findViewById(R.id.edit_text);
+        yourassigneduuid = findViewById(R.id.yourassigneduuid);
 
         System.out.println("getBaseContextOnCreate" + getBaseContext());
         basecontext = getBaseContext();
@@ -300,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void savefile(View v) {
+    public void saveuuid(View v) {
         String text = mEditText.getText().toString();
         FileOutputStream fos = null;
 
@@ -329,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void load(View v) {
+    public void loaduuid() {
         FileInputStream fis = null;
 
         try {
@@ -343,7 +347,9 @@ public class MainActivity extends AppCompatActivity {
                 sb.append(text).append("\n");
             }
 
-            mEditText.setText(sb.toString());
+            //mEditText.setText(sb.toString());
+            yourassigneduuid.setText("Your assigned UUID is: " + sb.toString());
+
             System.out.println(sb.toString());// sb.toString is correct
             System.out.println("+++++++++");
 
