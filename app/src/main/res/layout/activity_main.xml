@@ -42,52 +42,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:lineHeight="30dp" />
 
-    <EditText
-        android:id="@+id/edit_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
-        android:layout_marginTop="80dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:text="10000000-0000-0000-0000-000000000000"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="287dp"
-        android:layout_marginTop="16dp"
-        android:onClick="savefile"
-        android:text="save uuid"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="305dp"
-        android:layout_marginTop="64dp"
-        android:layout_marginEnd="34dp"
-        android:onClick="load"
-        android:text="loadUUID"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <Button
         android:id="@+id/dbupdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="294dp"
-        android:layout_marginTop="115dp"
-        android:layout_marginEnd="37dp"
+        android:layout_marginStart="272dp"
+        android:layout_marginTop="16dp"
         android:text="Update DB"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -98,6 +59,16 @@
         android:layout_marginStart="29dp"
         android:layout_marginTop="129dp"
         android:text="IllCloseContacts???"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/yourassigneduuid"
+        android:layout_width="322dp"
+        android:layout_height="36dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="80dp"
+        android:text="No Unique ID Assigned to you yet. Please be patient. Thanks for using our app."
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
