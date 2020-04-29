@@ -68,7 +68,7 @@
         android:layout_height="36dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="80dp"
-        android:text="TextView"
+        android:text="No Unique ID Assigned to you yet. Please be patient. Thanks for using our app."
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
