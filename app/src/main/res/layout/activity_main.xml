@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="startButton"
+        android:text="Start !"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -21,9 +21,9 @@
         android:id="@+id/stopButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="148dp"
+        android:layout_marginStart="104dp"
         android:layout_marginTop="16dp"
-        android:text="stopButton"
+        android:text="Stop !"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -46,9 +46,9 @@
         android:id="@+id/dbupdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="272dp"
-        android:layout_marginTop="16dp"
-        android:text="Update DB"
+        android:layout_marginStart="212dp"
+        android:layout_marginTop="124dp"
+        android:text="All Close Contacts"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -56,9 +56,9 @@
         android:id="@+id/loadtheill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="29dp"
-        android:layout_marginTop="129dp"
-        android:text="IllCloseContacts???"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="124dp"
+        android:text="Close Contacts at Risk"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
