@@ -397,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
             InputStream input = null;
             try {
                 Log.d(TAG,"do In Background: Starts download");
-                input = new URL("http://206.189.39.40:5000/static/cases.csv").openStream();
+                input = new URL("http://206.189.39.40/static/cases.csv").openStream();
                 System.out.println("input"+input);
             } catch (IOException e) {
                 //todo: A better feedback to the user about the issue of lack of internet connection
