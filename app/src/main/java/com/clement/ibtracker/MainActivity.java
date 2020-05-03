@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void loaddbview(Context context) {
         //Context context = this.context;
-        StringBuilder dbinstr = new StringBuilder("Close Contacts Table \n : Beaconid, Seconds in contact(Occurrence),Datetime ");
+        StringBuilder dbinstr = new StringBuilder("All Detected Close Contacts** : \nID , Secs.in contact , Date-&-time-of-last-contact \n\n");
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
         BeaconService beaconService = new BeaconService();
         SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -239,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }catch(SQLiteException e) {
-            dbinstr.append("Welcome to the app Please Read the legal instructions"); //todo:legal instructions and quick start guide
+            dbinstr.append("Welcome to the app. This app is created by Clement Tong, a 14 year old from HKSAR, China. Please note that this app is provided for us as is and is not a replacement for any measures you are taking now"); //todo:legal instructions and quick start guide
         }
         //final String BEACONIDTXT = "beaconid.txt";
         //setContentView(R.layout.activity_main);
