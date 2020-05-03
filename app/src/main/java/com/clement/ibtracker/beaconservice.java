@@ -465,8 +465,9 @@ public class beaconservice extends Service implements BeaconConsumer {
             InputStream input = null;
             try {
                 Log.d(TAG,"do In Background: NEWUUID!!!!!!!!!");
-                input = new URL("http://206.189.39.40:5000/uuid/new").openStream();
+                input = new URL("http://206.189.39.40/uuid/new").openStream();
                 System.out.println("new uuid buffer input"+input);
+                transmitbeacon();
             } catch (IOException e) {
                 //todo: A better feedback to the user about the issue of lack of internet connection
                 //Means that the server is either down or the user doesn't have internet connection

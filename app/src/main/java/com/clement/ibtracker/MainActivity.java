@@ -525,7 +525,7 @@ public class MainActivity extends AppCompatActivity {
             InputStream input = null;
             try {
                 Log.d(TAG,"do In Background: NEWUUID!!!!!!!!!");
-                input = new URL("http://206.189.39.40:5000/uuid/new").openStream();
+                input = new URL("http://206.189.39.40/uuid/new").openStream();
                 System.out.println("new uuid buffer input"+input);
             } catch (IOException e) {
                 //todo: A better feedback to the user about the issue of lack of internet connection
