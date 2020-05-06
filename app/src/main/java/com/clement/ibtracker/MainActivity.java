@@ -49,6 +49,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -139,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
             //which view to load at start (ill patients or full uuid view
             loaddbview(this);
             //loadillclosecontactsview(getBaseContext());
+            //loaddbview(this);
+            loadillclosecontactsview(this);
         });
         System.out.println("OMGOMGOMG");
         //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
@@ -178,6 +181,12 @@ public class MainActivity extends AppCompatActivity {
 
         DownoladData downloadData = new DownoladData();
         downloadData.execute("");
+
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         loaduuid(); //for the view
 
@@ -398,6 +407,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected List doInBackground(String... strings) {
             List<com.clement.ibtracker.Patientdata> patientsdata = new ArrayList<>();
+            List<String> patientsdatauuid = new ArrayList<>();
             Log.d(TAG,"Arrived in do in background (Async Task)");
             //getting data in background from link
             InputStream input = null;
@@ -452,10 +462,18 @@ public class MainActivity extends AppCompatActivity {
                                 patientdata.setUuid(tokens[0]);
                                 patientdata.setSituation(tokens[1]);
                                 patientdata.setDate(tokens[2]);
+                                System.out.println("patientdata"+patientdata.getUuid());
+                                // todo: limitation : If multiple records of the Same UUID exists on the server,
+                                //  it cannot be handeled. It will print out all the uuids. However, if there are multiple detections of the Same UUID locally, it is not a problem
+                                System.out.println("Contains patient???"+ Arrays.asList(patientsdata).contains(patientdata));
                                 if (!Arrays.asList(patientsdata).contains(patientdata)){
                                     patientsdata.add(patientdata);
-                                    System.out.println(patientsdata);
-                                    Log.e(TAG,"Close Contact Patients Data" + patientsdata);
+                                    patientsdatauuid.add(patientdata.getUuid());
+                                    System.out.println("patientsdatalist"+patientsdata);
+                                    /*if(!Arrays.asList(patientsdatauuid).contains(patientdata.getUuid())) {
+                                        System.out.println("patientsdatalist - uuid" + patientsdatauuid);
+                                        Log.e(TAG, "Close Contact Patients Data" + patientsdata);
+                                    }*/
                                 } else {
                                     System.out.println("Already Recorded");
                                 }
