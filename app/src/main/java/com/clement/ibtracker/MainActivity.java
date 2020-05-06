@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         //error due to api version issues. Debugger explains. Ignore for now. (Api 23 , API 21)
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1234); //check min api error
 
+
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
         loadtheill = findViewById(R.id.loadtheill);
@@ -135,7 +136,9 @@ public class MainActivity extends AppCompatActivity {
             //Turning On Bluetooth to avoid errors:
             enableBT();
             startService(new Intent (this, beaconservice.class));
+            //which view to load at start (ill patients or full uuid view
             loaddbview(this);
+            //loadillclosecontactsview(getBaseContext());
         });
         System.out.println("OMGOMGOMG");
         //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
@@ -170,10 +173,13 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("getBaseContextOnCreate" + getBaseContext());
         basecontext = getBaseContext();
 
-        loaddbview(this);
+        //loaddbview(this);
+        loadillclosecontactsview(this);
 
         DownoladData downloadData = new DownoladData();
         downloadData.execute("");
+
+        loaduuid(); //for the view
 
 
     }
