@@ -551,6 +551,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG,"do In Background: NEWUUID!!!!!!!!!");
                 input = new URL("http://206.189.39.40/uuid/new").openStream();
                 System.out.println("new uuid buffer input"+input);
+                Log.d(TAG,"new uuid buffer input"+input);
             } catch (IOException e) {
                 //todo: A better feedback to the user about the issue of lack of internet connection
                 //Means that the server is either down or the user doesn't have internet connection
@@ -638,8 +639,11 @@ public class MainActivity extends AppCompatActivity {
             //Implement cannot find UUID function:
             System.out.println("FNF e");
             Log.e("beaconservice","CanotFindUUID.txt file. Running choose uuid and saving from server");
+            Log.d(TAG,"notifying user to turn on their wifi or mobile netowrk");
+            Toast.makeText(this, R.string.Cannotuuidnew,Toast.LENGTH_LONG);
             NewUUID newUUID = new NewUUID();
             newUUID.execute("");
+            Log.d("beaconservice","NewUUID Ran sucessfully");
             autoloadtocheckuuid(); //run the function again since the UUID needs to be loaded into the system
         } catch (IOException e) {
             e.printStackTrace();
