@@ -143,16 +143,6 @@ public class MainActivity extends AppCompatActivity {
 
         TextView dbtextview = findViewById(R.id.dbtextview);
 
-        //beaconManager = BeaconManager.getInstanceForApplication(this);
-        //beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout((IBEACON_LAYOUT))); //SWITCH TO IBEACON LATER //Todo: switch to IBeacon
-        //beaconManager.bind(this);
-
-        //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
-        //sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT, occurrence INTEGER)"); //a table in the database named 'contacts' will be created if it does not exist
-        //sqLiteDatabase.execSQL
-
-        //related to the UUID TExt Box Below
-        //mEditText = findViewById(R.id.edit_text);
         yourassigneduuid = findViewById(R.id.yourassigneduuid);
 
         System.out.println("getBaseContextOnCreate" + getBaseContext());
@@ -238,10 +228,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (SQLiteException e) {
             dbinstr.append("Welcome to the app. This app is created by Clement Tong, a 14 year old from HKSAR, China. Please note that this app is provided for us as is and is not a replacement for any measures you are taking now"); //todo:legal instructions and quick start guide
         }
-        //final String BEACONIDTXT = "beaconid.txt";
-        //setContentView(R.layout.activity_main);
-        //EditText mEditText;
-        //setContentView(R.layout.activity_main);
+
         System.out.println("actually");
         TextView dbtextview = findViewById(R.id.dbtextview);
         dbtextview.setText("");
@@ -251,16 +238,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadillclosecontactsview(Context context) {
-        //String text = mEditText.getText().toString();
-        //Context context = this.context;
         StringBuilder datainstr = new StringBuilder("ILL Close Contacts Table \n : Beaconid ");
         System.out.println("loadingillclose");
 
-        //EditText mEditText = null;
-        //System.out.println("actually");
-        //FileInputStream fis = null;
         try {
-            //String fileName = "closecontacts.txt";
             String file_name = this.getFilesDir()
                     .getAbsolutePath() + "/closecontacts.txt";
             File file = new File(file_name);
