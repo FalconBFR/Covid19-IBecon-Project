@@ -12,7 +12,7 @@ Android App V1: Android Studio Java Android App Project
 csvmanagement: Python Flask Server code 
 
 Notes on limitations:
-Current hosting is not ideal - it is not hosted on a proper nginx/whatever server but instead on the flask development server. It will sometimes crash. Need to fix that
+* The server is now hosted on a digital ocean's cheapest droplet ($5 per month) with nginx and auto-restart incase the server stops for whatever reason.
 Confirmed Patients must be imported in the correct format or it will causes crashes on the phone - 
             solution(s): 
                 1: Add tolerence on App
