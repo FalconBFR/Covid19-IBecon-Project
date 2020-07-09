@@ -105,6 +105,8 @@ public class MainActivity extends AppCompatActivity {
         //error due to api version issues. Debugger explains. Ignore for now. (Api 23 , API 21)
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, 1234); //check min api error
 
+        //making sure that a UUID is present, else: grabbing one from server
+        autoloadtocheckuuid();
 
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
@@ -112,8 +114,6 @@ public class MainActivity extends AppCompatActivity {
         dbupdate = findViewById(R.id.dbupdate);
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
-            //making sure that a UUID is present, else: grabbing one from server
-            autoloadtocheckuuid();
             //Turning On Bluetooth to avoid errors:
             enableBT();
             startService(new Intent(this, beaconservice.class));
