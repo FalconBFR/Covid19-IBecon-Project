@@ -6,7 +6,6 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -23,7 +22,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.NotificationCompat;
 
 import org.altbeacon.beacon.Beacon;
@@ -44,21 +42,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 public class beaconservice extends Service implements BeaconConsumer {
 
-    private static final String CHANNEL_ID = "Detecting Close Contacts" ;
+    private static final String CHANNEL_ID = "Detecting Close Contacts";
     private NotificationManager mNM;
     private int NOTIFICATION = R.string.local_service_started;
 
@@ -70,7 +64,6 @@ public class beaconservice extends Service implements BeaconConsumer {
     //public Context context = getApplicationContext(); //not needed.
 
     private static final String TAG = "MainActivity";
-
 
 
     private Button startButton;
@@ -108,7 +101,7 @@ public class beaconservice extends Service implements BeaconConsumer {
                 //if (!entryMessageRaised) {
                 //todo: change logic later
                 //ShowAlert("did Enter Region", "Entering Region" + region.getUniqueId() +
-                  //      "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
+                //      "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
                 //entryMessageRaised = true;
                 //}
                 //this is how you acess beacon  - System.out.println(beaconreal.getId1());
@@ -120,7 +113,7 @@ public class beaconservice extends Service implements BeaconConsumer {
                 //if (!exitMessageRaised) {
                 //todo: change logic later
                 //ShowAlert("did Exit Region", "Exiting Region" + region.getUniqueId() +
-                  //      "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
+                //      "Beacon detected UUID/major/minor:" + region.getId1() + "/" + region.getId2() + "/" + region.getId3());
                 //System.out.println(beaconRegion.getId1());
                 //System.out.println(beacon.get);
                 //System.out.println(beacon.getid1);
@@ -169,6 +162,7 @@ public class beaconservice extends Service implements BeaconConsumer {
         public ServiceHandler(Looper looper) {
             super(looper);
         }
+
         @Override
         public void handleMessage(Message msg) {
             // Normally we would do some work here, like download a file.
@@ -194,7 +188,7 @@ public class beaconservice extends Service implements BeaconConsumer {
             // Stop the service using the startId, so that we don't stop
             // the service in the middle of handling another job
             //stopSelf(msg.arg1);
-                //TimeUnit.MINUTES.sleep(1);
+            //TimeUnit.MINUTES.sleep(1);
             System.out.println("reaches");
             if (Thread.interrupted()) {
                 System.out.println("oopsopsohno");
@@ -290,7 +284,7 @@ public class beaconservice extends Service implements BeaconConsumer {
             System.out.println("transmit-cinco");
             beaconTransmitter.startAdvertising(beacon);
             System.out.println("transmit-seis");
-        } catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Toast.makeText(this, "Bluetooth !!! Please Turn On Your Bluetooth!!!", Toast.LENGTH_LONG).show(); //often causes confusion. Made me debug for hours for twice already
         }
     }
@@ -324,7 +318,7 @@ public class beaconservice extends Service implements BeaconConsumer {
             //Only here just in case the user did something to the file to avoid a crash
             //This really shouldn't happen :(
             System.out.println("FNF e");
-            Log.e("beaconservice","CanotFindUUID.txt file. Running choose uuid and saving from server");
+            Log.e("beaconservice", "CanotFindUUID.txt file. Running choose uuid and saving from server");
             NewUUID newUUID = new NewUUID();
             newUUID.execute("");
             autoload(); //run the function again since the UUID needs to be loaded into the system
@@ -335,27 +329,27 @@ public class beaconservice extends Service implements BeaconConsumer {
             try {
                 //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
                 fis.close();
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 //another spot to implement UUID not found function but I am choosing another place to run the newuuid func
-                Log.d("beaconservice","This should not happen! in autoload function Null Pointer Exception e. Should be rulled out by FNe");
+                Log.d("beaconservice", "This should not happen! in autoload function Null Pointer Exception e. Should be rulled out by FNe");
             } catch (IOException e) {
                 e.printStackTrace();
             }
             //}
         }
-        if(BEACONUUID.length()<36){
+        if (BEACONUUID.length() < 36) {
             //beacon id is some how messed up
-            Log.d(TAG,"CRAP AUTOLOAD BACKUP UUID HAPPENED!!! No Failsafe funciton written for this");
+            Log.d(TAG, "CRAP AUTOLOAD BACKUP UUID HAPPENED!!! No Failsafe funciton written for this");
 
         }
         return BEACONUUID;
     }
 
-    public String datettimeprocessingselfwrite(long currenttimeinms){
+    public String datettimeprocessingselfwrite(long currenttimeinms) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:MM");
         Date date = new Date(currenttimeinms);
         String time = simpleDateFormat.format(date);
-        Log.d("datetimeprocessing",time);
+        Log.d("datetimeprocessing", time);
         return time;
     }
 
@@ -424,7 +418,7 @@ public class beaconservice extends Service implements BeaconConsumer {
 
     }
 
-    public void savinguuidtotxt(String newuuid){
+    public void savinguuidtotxt(String newuuid) {
         FileOutputStream fos = null;
         try {
             Context context = this;
@@ -432,13 +426,13 @@ public class beaconservice extends Service implements BeaconConsumer {
                     .getAbsolutePath() + "/beaconid.txt";
             //fos = openFileOutput("closecontacts.txt", MODE_PRIVATE);
 
-            fos = new FileOutputStream(file_name,false);
+            fos = new FileOutputStream(file_name, false);
             fos.write(newuuid.getBytes());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (fos != null) {
                 try {
                     fos.close();
@@ -449,24 +443,25 @@ public class beaconservice extends Service implements BeaconConsumer {
         }
     }
 
-    private class NewUUID extends AsyncTask<String,Void, List> {
+    private class NewUUID extends AsyncTask<String, Void, List> {
         private static final String TAG = "DownloadedData";
+
         @Override
         protected void onPostExecute(List list) {
-            Log.d(TAG,"onPostExecuted:Param is" + list);
+            Log.d(TAG, "onPostExecuted:Param is" + list);
             super.onPostExecute(list);
         }
 
         @Override
         protected List doInBackground(String... strings) {
             List<com.clement.ibtracker.Patientdata> patientsdata = new ArrayList<>();
-            Log.d(TAG,"Arrived in do in background (Async Task)");
+            Log.d(TAG, "Arrived in do in background (Async Task)");
             //getting data in background from link
             InputStream input = null;
             try {
-                Log.d(TAG,"do In Background: NEWUUID!!!!!!!!!");
+                Log.d(TAG, "do In Background: NEWUUID!!!!!!!!!");
                 input = new URL("http://206.189.39.40/uuid/new").openStream();
-                System.out.println("new uuid buffer input"+input);
+                System.out.println("new uuid buffer input" + input);
                 transmitbeacon();
             } catch (IOException e) {
                 //todo: A better feedback to the user about the issue of lack of internet connection
@@ -496,7 +491,7 @@ public class beaconservice extends Service implements BeaconConsumer {
         }
     }
 
-    private void showNotification(String tobeshowntext){
+    private void showNotification(String tobeshowntext) {
         // In this sample, we'll use the same text for the ticker and the expanded notification
         CharSequence text = tobeshowntext;
 
@@ -513,7 +508,6 @@ public class beaconservice extends Service implements BeaconConsumer {
                 .setContentText(text)  // the contents of the entry
                 .setContentIntent(contentIntent)  // The intent to send when the entry is clicked
                 .build();
-
 
 
         // Send the notification.
