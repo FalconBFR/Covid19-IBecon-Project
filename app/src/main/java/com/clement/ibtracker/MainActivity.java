@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
             //loadillclosecontactsview(getBaseContext());
             //loaddbview(this);
             loadillclosecontactsview(this);
+            loaduuid(); //for the view
         });
         System.out.println("OMGOMGOMG");
         //stopButton.setOnClickListener((v) -> { stopBeaconMonitoring(); });
@@ -131,11 +132,12 @@ public class MainActivity extends AppCompatActivity {
 
         dbupdate.setOnClickListener((v) -> {
             loaddbview(this);
-            loaduuid();
+            loaduuid(); //for the view
         });
 
         loadtheill.setOnClickListener((v) -> {
             loadillclosecontactsview(this);
+            loaduuid(); //for the view
         });
 
 
