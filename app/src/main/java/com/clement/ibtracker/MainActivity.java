@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -608,7 +609,15 @@ public class MainActivity extends AppCompatActivity {
             NewUUID newUUID = new NewUUID();
             newUUID.execute("");
             Log.d("beaconservice", "NewUUID Ran sucessfully");
-            autoloadtocheckuuid(); //run the function again since the UUID needs to be loaded into the system
+            //Re-Running Function - delay to avoid it calling for a new uuid multiple times since it takes time to save the new uuid to save to the .txt file
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Do something after 0.05s = 50ms
+                    autoloadtocheckuuid(); //run the function again since the UUID needs to be loaded into the system
+                }
+            }, 50);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
