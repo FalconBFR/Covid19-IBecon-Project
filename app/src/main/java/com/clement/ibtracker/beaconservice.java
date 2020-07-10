@@ -263,16 +263,16 @@ public class beaconservice extends Service implements BeaconConsumer {
         try {
             System.out.println("transmit-uno");
             String BEACONUUID = autoload();
-            //if (BEACONUUID.length()!=36){
-            //BEACONUUID="00000000-0000-0000-0000-000000000000";
-            //}
+            String uuid = BEACONUUID.substring(0,36);
+            String major = BEACONUUID.substring(37,42);
+            String minor = BEACONUUID.substring(43,48);
+            System.out.println("substringtest" + uuid + major + minor);
             System.out.println(BEACONUUID);
             System.out.println("transmit-dos");
-            //BEACONUUID = "10000000-0000-0000-0000-000000000000";
             Beacon beacon = new Beacon.Builder()
-                    .setId1(BEACONUUID)
-                    .setId2("1")
-                    .setId3("2")
+                    .setId1(uuid)
+                    .setId2(major)
+                    .setId3(minor)
                     .setManufacturer(0x004c)
                     .setTxPower(-59)
                     .build();
@@ -460,7 +460,7 @@ public class beaconservice extends Service implements BeaconConsumer {
             InputStream input = null;
             try {
                 Log.d(TAG, "do In Background: NEWUUID!!!!!!!!!");
-                input = new URL("http://206.189.39.40/uuid/new").openStream();
+                input = new URL("http://206.189.39.40/uuid/officialnew").openStream();
                 System.out.println("new uuid buffer input" + input);
                 transmitbeacon();
             } catch (IOException e) {

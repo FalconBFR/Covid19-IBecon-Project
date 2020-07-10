@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -496,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class NewUUID extends AsyncTask<String, Void, List> {
+    public class NewUUID extends AsyncTask<String, Void, List> {
         private static final String TAG = "DownloadedData";
 
         @Override
@@ -513,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
             InputStream input = null;
             try {
                 Log.d(TAG, "do In Background: NEWUUID!!!!!!!!!");
-                input = new URL("http://206.189.39.40/uuid/new").openStream();
+                input = new URL("http://206.189.39.40/uuid/officialnew").openStream();
                 System.out.println("new uuid buffer input" + input);
                 Log.d(TAG, "new uuid buffer input" + input);
             } catch (IOException e) {
@@ -591,10 +592,6 @@ public class MainActivity extends AppCompatActivity {
 
             //mEditText.setText(sb.toString());
             BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
-            //System.out.println("\nheyhey");
-            //System.out.println(sb.toString());// sb.toString is correct
-            //System.out.println("10000000-0000-0000-0000-000000000000");
-            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
             BEACONUUID = BEACONUUID.replaceAll("\\s+", "");
             //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
             System.out.println("+++++++++");
@@ -602,19 +599,25 @@ public class MainActivity extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             //Implement cannot find UUID function:
             System.out.println("FNF e");
-            Log.e("beaconservice", "CanotFindUUID.txt file. Running choose uuid and saving from server");
+            Log.d("beaconservice", "CanotFindUUID.txt file. Running choose uuid and saving from server");
             Log.d(TAG, "notifying user to turn on their wifi or mobile netowrk");
             Toast.makeText(this, R.string.Cannotuuidnew, Toast.LENGTH_LONG);
             NewUUID newUUID = new NewUUID();
             newUUID.execute("");
             Log.d("beaconservice", "NewUUID Ran sucessfully");
-            autoloadtocheckuuid(); //run the function again since the UUID needs to be loaded into the system
+            //Re-Running Function - delay to avoid it calling for a new uuid multiple times since it takes time to save the new uuid to save to the .txt file
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Do something after 0.05s = 50ms
+                    autoloadtocheckuuid(); //run the function again since the UUID needs to be loaded into the system
+                }
+            }, 50);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            //if (fis!= null){
             try {
-                //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
                 fis.close();
             } catch (NullPointerException e) {
                 //another spot to implement UUID not found function but I am choosing another place to run the newuuid func
@@ -622,13 +625,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //}
-        }
-        if (BEACONUUID.length() < 36) {
-            //beacon id is some how messed up
-            Log.d(TAG, "CRAP AUTOLOAD BACKUP UUID HAPPENED!!! THIS IS AMAZING");
-            //BEACONUUID="00000000-0000-0000-0000-000000000000";
-
         }
         return BEACONUUID;
     }
