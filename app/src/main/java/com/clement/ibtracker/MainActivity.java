@@ -497,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class NewUUID extends AsyncTask<String, Void, List> {
+    public class NewUUID extends AsyncTask<String, Void, List> {
         private static final String TAG = "DownloadedData";
 
         @Override
@@ -514,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
             InputStream input = null;
             try {
                 Log.d(TAG, "do In Background: NEWUUID!!!!!!!!!");
-                input = new URL("http://206.189.39.40/uuid/new").openStream();
+                input = new URL("http://206.189.39.40/uuid/officialnew").openStream();
                 System.out.println("new uuid buffer input" + input);
                 Log.d(TAG, "new uuid buffer input" + input);
             } catch (IOException e) {
@@ -592,10 +592,6 @@ public class MainActivity extends AppCompatActivity {
 
             //mEditText.setText(sb.toString());
             BEACONUUID = sb.toString(); //sb.toString gives you a string output of what is on the .txt document
-            //System.out.println("\nheyhey");
-            //System.out.println(sb.toString());// sb.toString is correct
-            //System.out.println("10000000-0000-0000-0000-000000000000");
-            //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
             BEACONUUID = BEACONUUID.replaceAll("\\s+", "");
             //System.out.println(BEACONUUID=="10000000-0000-0000-0000-000000000000");
             System.out.println("+++++++++");
@@ -603,7 +599,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (FileNotFoundException e) {
             //Implement cannot find UUID function:
             System.out.println("FNF e");
-            Log.e("beaconservice", "CanotFindUUID.txt file. Running choose uuid and saving from server");
+            Log.d("beaconservice", "CanotFindUUID.txt file. Running choose uuid and saving from server");
             Log.d(TAG, "notifying user to turn on their wifi or mobile netowrk");
             Toast.makeText(this, R.string.Cannotuuidnew, Toast.LENGTH_LONG);
             NewUUID newUUID = new NewUUID();
@@ -621,9 +617,7 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            //if (fis!= null){
             try {
-                //BEACONUUID = "2f234454-cf6d-4a0f-adf2-f4911ba9ffa6";
                 fis.close();
             } catch (NullPointerException e) {
                 //another spot to implement UUID not found function but I am choosing another place to run the newuuid func
@@ -631,13 +625,6 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            //}
-        }
-        if (BEACONUUID.length() < 36) {
-            //beacon id is some how messed up
-            Log.d(TAG, "CRAP AUTOLOAD BACKUP UUID HAPPENED!!! THIS IS AMAZING");
-            //BEACONUUID="00000000-0000-0000-0000-000000000000";
-
         }
         return BEACONUUID;
     }
