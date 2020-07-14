@@ -132,8 +132,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dbupdate.setOnClickListener((v) -> {
-            loaddbview(this);
-            loaduuid(); //for the view
+            //loaddbview(this);
+            //loaduuid(); //for the view
+            startActivity(new Intent(this,all_contacts.class));
         });
 
         loadtheill.setOnClickListener((v) -> {
