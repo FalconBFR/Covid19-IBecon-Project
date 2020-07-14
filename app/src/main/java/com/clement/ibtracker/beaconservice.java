@@ -394,8 +394,8 @@ public class beaconservice extends Service implements BeaconConsumer {
                     if (distance > distanceprevious) {
                         distance = distanceprevious;
                     }
-                    Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
-                            "BluetoothID =" + beaconuuid_fromdb + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
+                      //      "BluetoothID =" + beaconuuid_fromdb + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
                 }
             } while (query.moveToNext());
         }
