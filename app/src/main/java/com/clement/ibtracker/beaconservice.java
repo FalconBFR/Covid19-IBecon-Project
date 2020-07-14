@@ -355,7 +355,10 @@ public class beaconservice extends Service implements BeaconConsumer {
 
     public void saveclosecontacts2(Beacon beacon, Double distance) {
         System.out.println("savingtodb!In service! Yeah");
-        Identifier beaconid1; //beaconid1
+        //Identifier beaconid1; //beaconid1
+        //Identifier beaconid2;
+        //Identifier beaconid3;
+
         int occurrence = 0; // initalize
         SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
 
@@ -365,32 +368,34 @@ public class beaconservice extends Service implements BeaconConsumer {
         //
         //
 
-        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT,occurrence INTEGER, closestavgdist DOUBLE, dateandtime TEXT)"); //a table in the database named 'contacts' will be created if it does not exist
+        sqLiteDatabase.execSQL("CREATE TABLE IF NOT EXISTS contacts(beaconid TEXT, occurrence INTEGER, closestavgdist DOUBLE, dateandtime TEXT)"); //a table in the database named 'contacts' will be created if it does not exist
         sqLiteDatabase.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS idx_contacts_beaconid ON contacts(beaconid)");
 
         //declaring the variable 'tobeputinsql' as the variable to store the commands
         String tobeputinsql;
 
         //formating the beaconid1 value for the database, can be simplified later
-        beaconid1 = beacon.getId1();
-        String beaconidstr = beaconid1.toString();
-        String bidnoquotes = beaconidstr;
-        beaconidstr = "'" + beaconidstr + "'";
+        String beaconid1str = beacon.getId1().toString(); //uuid
+        String beaconid2str = beacon.getId2().toString(); //major
+        String beaconid3str = beacon.getId3().toString(); //minor
+        String beaconid_combined = beaconid1str + "-" + beaconid2str + "-" + beaconid3str;
+        //String beaconidstr = beaconid1.toString();
+        //String bidnoquotes = beaconidstr;
+        //beaconidstr = "'" + beaconidstr + "'"; //todo:
 
         Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
 
         if (query.moveToFirst()) { //means equals to true, no need to specify
             do {
-                String beaconid = query.getString(0);
-
-                if (beaconid.equals(bidnoquotes)) {
+                String beaconuuid_fromdb = query.getString(0);
+                if (beaconuuid_fromdb.equals(beaconid_combined)) {
                     occurrence = query.getInt(1);
                     Double distanceprevious = query.getDouble(2);
                     if (distance > distanceprevious) {
                         distance = distanceprevious;
                     }
-                    Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
-                            "BluetoothID =" + beaconid + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(this, "BEFORE SAVED TO DATABASE " +
+                      //      "BluetoothID =" + beaconuuid_fromdb + " occurrence " + occurrence + "closest distance" + distance, Toast.LENGTH_LONG).show();
                 }
             } while (query.moveToNext());
         }
@@ -404,7 +409,7 @@ public class beaconservice extends Service implements BeaconConsumer {
 
         //formatDateTime(this, String.valueOf(System.currentTimeMillis()))
         int newoccurrence = occurrence + 1;
-        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + beaconidstr + "," + newoccurrence + "," + distance + "," + System.currentTimeMillis() + ");";
+        tobeputinsql = "INSERT OR REPLACE INTO contacts VALUES(" + "'"+beaconid_combined +"'," + newoccurrence + "," + distance + "," + System.currentTimeMillis() + ");";
         Log.d(TAG, "onCreate: sql is" + tobeputinsql);
         sqLiteDatabase.execSQL(tobeputinsql);
 

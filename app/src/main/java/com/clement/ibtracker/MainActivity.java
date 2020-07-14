@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,14 +24,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.altbeacon.beacon.BeaconManager;
-import org.altbeacon.beacon.service.BeaconService;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -53,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button startButton;
     private Button stopButton;
-    private Button dbupdate;
-    private Button loadtheill;
+    private Button dbupdate_button;
+    private Button risk_status_button;
     public Boolean ViewingDB = true; //else viewing close contacts
 
 
@@ -111,18 +110,18 @@ public class MainActivity extends AppCompatActivity {
 
         startButton = findViewById(R.id.startButton);
         stopButton = findViewById(R.id.stopButton);
-        loadtheill = findViewById(R.id.loadtheill);
-        dbupdate = findViewById(R.id.dbupdate);
+        //loadtheill = findViewById(R.id.loadtheill);
+        dbupdate_button = findViewById(R.id.dbupdate);
         //startButton.setOnClickListener((v) -> { startBeaconMonitoring(); });
         startButton.setOnClickListener((v) -> {
             //Turning On Bluetooth to avoid errors:
             enableBT();
             startService(new Intent(this, beaconservice.class));
             //which view to load at start (ill patients or full uuid view
-            loaddbview(this);
+            //loaddbview(this);
             //loadillclosecontactsview(getBaseContext());
             //loaddbview(this);
-            loadillclosecontactsview(this);
+            //loadillclosecontactsview(this);
             loaduuid(); //for the view
         });
         System.out.println("OMGOMGOMG");
@@ -131,18 +130,25 @@ public class MainActivity extends AppCompatActivity {
             stopService(new Intent(this, com.clement.ibtracker.beaconservice.class));
         });
 
-        dbupdate.setOnClickListener((v) -> {
-            loaddbview(this);
-            loaduuid(); //for the view
+        dbupdate_button.setOnClickListener((v) -> {
+            //loaddbview(this);
+            //loaduuid(); //for the view
+            startActivity(new Intent(this,all_contacts.class));
         });
 
-        loadtheill.setOnClickListener((v) -> {
-            loadillclosecontactsview(this);
-            loaduuid(); //for the view
+        //new big colorful button to display risk level
+        risk_status_button = findViewById(R.id.circular_risk_status_button);
+
+        risk_status_button.setOnClickListener((v) -> {
+            //loadillclosecontactsview(this);
+            //loaduuid(); //for the view
+            startActivity(new Intent(this,at_risk.class));
         });
 
 
-        TextView dbtextview = findViewById(R.id.dbtextview);
+
+
+                //TextView dbtextview = findViewById(R.id.dbtextview);
 
         yourassigneduuid = findViewById(R.id.yourassigneduuid);
 
@@ -150,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
         basecontext = getBaseContext();
 
         //loaddbview(this);
-        loadillclosecontactsview(this);
+        //loadillclosecontactsview(this);
 
         DownoladData downloadData = new DownoladData();
         downloadData.execute("");
@@ -190,98 +196,6 @@ public class MainActivity extends AppCompatActivity {
         String time = simpleDateFormat.format(date);
         Log.d("datetimeprocessing", time);
         return time;
-    }
-
-    public void loaddbview(Context context) {
-        //Context context = this.context;
-        StringBuilder dbinstr = new StringBuilder("All Detected Close Contacts** : \nID , Secs.in contact , Date-&-time-of-last-contact \n\n");
-        //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
-        BeaconService beaconService = new BeaconService();
-        SQLiteDatabase sqLiteDatabase = context.openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
-        try {
-            Cursor query = sqLiteDatabase.rawQuery("SELECT * FROM contacts;", null);
-            if (query.moveToFirst()) { //means equals to true, no need to specify
-                do {
-                    String beaconid = query.getString(0);
-                    Integer occurrence = query.getInt(1);
-                    Double beacondist = query.getDouble(2);
-                    Long datetime = query.getLong(3);
-
-                    //processing beacondistance to round up
-                    Long beacondistprocessed = Math.round(beacondist);
-
-
-                    //processing Date and Time from MS since 1970 to a readable format
-                    String processeddatetime = datettimeprocessingselfwrite(datetime);
-
-                    StringBuilder concatbeaconid = new StringBuilder();
-                    //String concatbeaconid ="";
-
-                    //to only get the first few digits of the UUID
-                    for (int characterno = 0; characterno < 5; characterno++) {
-                        concatbeaconid.append(beaconid.charAt(characterno));
-                    }
-
-                    dbinstr.append("\n" + concatbeaconid.toString() + ":   " + occurrence + ":   " + beacondistprocessed + "m  " + processeddatetime);
-                } while (query.moveToNext());
-
-            }
-        } catch (SQLiteException e) {
-            dbinstr.append("Welcome to the app. This app is created by Clement Tong, a 14 year old from HKSAR, China. Please note that this app is provided for us as is and is not a replacement for any measures you are taking now"); //todo:legal instructions and quick start guide
-        }
-
-        System.out.println("actually");
-        TextView dbtextview = findViewById(R.id.dbtextview);
-        dbtextview.setText("");
-        dbtextview.setText(dbinstr);
-
-
-    }
-
-    public void loadillclosecontactsview(Context context) {
-        StringBuilder datainstr = new StringBuilder("ILL Close Contacts Table \n : Beaconid ");
-        System.out.println("loadingillclose");
-
-        try {
-            String file_name = this.getFilesDir()
-                    .getAbsolutePath() + "/closecontacts.txt";
-            File file = new File(file_name);
-            System.out.println("the file line 418 file" + file);
-            FileReader fr = new FileReader(file);
-            BufferedReader br = new BufferedReader(fr);
-            //MUST NOT DEBUG BY PRINTING OUT BR.READLINE() since it can only be done once
-            String line;
-            Boolean lastlinewasempty = false;
-            Integer counter = 0;
-            while ((line = br.readLine()) != null | counter > 3) { // '|'means or
-                System.out.println("entered 428 while loop");
-                //process the line
-                /*//stop reading logic: if 3 consecutive lines are empty
-                lastlinewasempty = false;
-                if (br.readLine() == null){
-                    counter +=1;
-                    lastlinewasempty = true;
-                    System.out.println("crap file line empty");
-                } else {
-                    lastlinewasempty = false;
-                    counter=0;
-                }*/
-                System.out.println("datainstr line" + line);
-                datainstr.append("\n" + line);
-                System.out.println("datainstr" + datainstr);
-            }
-            System.out.println("FINAL DATAINSTR" + datainstr);
-            br.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("loadingfilenotfound431");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("IOE449");
-            e.printStackTrace();
-        }
-        TextView dbtextview = findViewById(R.id.dbtextview);
-        dbtextview.setText(datainstr);
-
     }
 
     public void saveuuid(View v) {
@@ -381,7 +295,6 @@ public class MainActivity extends AppCompatActivity {
                 input = new URL("http://206.189.39.40/static/cases.csv").openStream();
                 System.out.println("input" + input);
             } catch (IOException e) {
-                //todo: A better feedback to the user about the issue of lack of internet connection
                 //Means that the server is either down or the user doesn't have internet connection
                 Log.e(TAG, "download error");
                 //e.printStackTrace();
@@ -394,6 +307,9 @@ public class MainActivity extends AppCompatActivity {
                                 "Take necessary precautions please. This is not a replacement for Social Distancing or any other measures you are " +
                                 "currently taking/asked by the goverment to take.");
                 savingcctotxt(faileddownloaduserfeedback);
+                //better user feedback - big circular button
+                risk_status_button.setBackgroundColor(Color.YELLOW);
+                risk_status_button.setText("No Internet Connection. Please check your internet connection. If this error persists, please email the dev team to check if the server is down. 無網絡連結，無法確認您有沒有感染的風險。請確保您有打開Wifi/流動數據。");
                 return faileddownloaduserfeedback;
             }
             //reading the data into input stream reader
@@ -418,10 +334,19 @@ public class MainActivity extends AppCompatActivity {
                         Log.d(TAG, "Querey-ing");
                         do {
                             String beaconid = query.getString(0);
+                            Log.d(TAG,"query String line (line 337)" + beaconid);
                             Integer occurrence = query.getInt(1);
                             Double beacondist = query.getDouble(2);
                             if (beaconid.equals(tokens[0])) { // never use string == string. Use string.equals(string) beaconid == tokens[0] is wrong
                                 Log.e(TAG, "Problem here. Confimed case" + patientsdata);
+
+                                //setting risk button
+                                risk_status_button.setBackgroundColor(Color.RED);
+                                risk_status_button.setText("You May Be At Risk of An Infection. Click HERE to learn more 你可能被感染，詳情按此");
+                                //todo: limitation: Running Sequence issue. The color of the button may not be displayed correctly if the user jumped between activities. To solve this, save current color in a .txt file
+                                //
+
+
                                 //problematicpeole.append("\n" + beaconid + ":   " + occurrence + ":   " + beacondist + "m");
                                 com.clement.ibtracker.Patientdata patientdata = new com.clement.ibtracker.Patientdata(); //** Patient data is data for a single patient. Patients Data is data for all the close contact confirmed cases
                                 patientdata.setUuid(tokens[0]);

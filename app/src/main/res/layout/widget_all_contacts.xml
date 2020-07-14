@@ -8,7 +8,7 @@
     android:padding="15dp">
 
     <TextView
-        android:id="@+id/uuid"
+        android:id="@+id/widget_all_contacts_uuid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -19,34 +19,32 @@
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/contact_time"
+        android:id="@+id/widget_all_contacts_contact_length"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="100dp"
-        android:text="In Contact for (approx in minutes)"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="96dp"
+        android:text="Length of C"
         android:textColor="#000"
         android:textSize="17sp"
-        tools:ignore="MissingConstraints"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
+        tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/last_date_in_contact"
+        android:id="@+id/widget_all_contacts_last_date_in_contact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="100dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="44dp"
         android:text="Last Day of Contact"
         android:textColor="#000"
         android:textSize="17sp"
-        tools:ignore="MissingConstraints"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        />
-
-
+        tools:ignore="MissingConstraints" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
