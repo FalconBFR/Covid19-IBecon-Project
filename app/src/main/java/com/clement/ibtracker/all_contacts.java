@@ -93,7 +93,7 @@ public class all_contacts extends AppCompatActivity {
         }
 
         System.out.println("actually");
-        TextView dbtextview = findViewById(R.id.dbtextview);
+        //TextView dbtextview = findViewById(R.id.dbtextview);
         //dbtextview.setText("");
         //dbtextview.setText(dbinstr);
 

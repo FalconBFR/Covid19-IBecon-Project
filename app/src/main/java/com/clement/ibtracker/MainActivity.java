@@ -119,10 +119,10 @@ public class MainActivity extends AppCompatActivity {
             enableBT();
             startService(new Intent(this, beaconservice.class));
             //which view to load at start (ill patients or full uuid view
-            loaddbview(this);
+            //loaddbview(this);
             //loadillclosecontactsview(getBaseContext());
             //loaddbview(this);
-            loadillclosecontactsview(this);
+            //loadillclosecontactsview(this);
             loaduuid(); //for the view
         });
         System.out.println("OMGOMGOMG");
@@ -138,12 +138,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         loadtheill.setOnClickListener((v) -> {
-            loadillclosecontactsview(this);
-            loaduuid(); //for the view
+            //loadillclosecontactsview(this);
+            //loaduuid(); //for the view
+            startActivity(new Intent(this,at_risk.class));
         });
 
 
-        TextView dbtextview = findViewById(R.id.dbtextview);
+        //TextView dbtextview = findViewById(R.id.dbtextview);
 
         yourassigneduuid = findViewById(R.id.yourassigneduuid);
 
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
         basecontext = getBaseContext();
 
         //loaddbview(this);
-        loadillclosecontactsview(this);
+        //loadillclosecontactsview(this);
 
         DownoladData downloadData = new DownoladData();
         downloadData.execute("");
@@ -193,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
         return time;
     }
 
-    public void loaddbview(Context context) {
+    /*public void loaddbview(Context context) {
         //Context context = this.context;
         StringBuilder dbinstr = new StringBuilder("All Detected Close Contacts** : \nID , Secs.in contact , Date-&-time-of-last-contact \n\n");
         //SQLiteDatabase sqLiteDatabase = getBaseContext().openOrCreateDatabase("sqlite-test-1.db", MODE_PRIVATE, null);
@@ -237,9 +238,9 @@ public class MainActivity extends AppCompatActivity {
         dbtextview.setText(dbinstr);
 
 
-    }
+    }*/
 
-    public void loadillclosecontactsview(Context context) {
+    /*public void loadillclosecontactsview(Context context) {
         StringBuilder datainstr = new StringBuilder("ILL Close Contacts Table \n : Beaconid ");
         System.out.println("loadingillclose");
 
@@ -257,7 +258,7 @@ public class MainActivity extends AppCompatActivity {
             while ((line = br.readLine()) != null | counter > 3) { // '|'means or
                 System.out.println("entered 428 while loop");
                 //process the line
-                /*//stop reading logic: if 3 consecutive lines are empty
+                /*stop reading logic: if 3 consecutive lines are empty
                 lastlinewasempty = false;
                 if (br.readLine() == null){
                     counter +=1;
@@ -267,6 +268,7 @@ public class MainActivity extends AppCompatActivity {
                     lastlinewasempty = false;
                     counter=0;
                 }*/
+        /*
                 System.out.println("datainstr line" + line);
                 datainstr.append("\n" + line);
                 System.out.println("datainstr" + datainstr);
@@ -283,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
         TextView dbtextview = findViewById(R.id.dbtextview);
         dbtextview.setText(datainstr);
 
-    }
+    }*/
 
     public void saveuuid(View v) {
         String text = mEditText.getText().toString();
