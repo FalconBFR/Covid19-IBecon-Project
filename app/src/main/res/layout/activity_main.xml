@@ -38,12 +38,12 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/loadtheill"
+        android:id="@+id/circular_risk_status_button"
         android:layout_width="350dp"
         android:layout_height="350dp"
         android:layout_marginStart="28dp"
         android:layout_marginTop="260dp"
-        android:background="@drawable/circlular_risk_alert_button"
+        android:background="@drawable/circular_risk_status_button"
         android:text="@string/CloseContactBeacons"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
