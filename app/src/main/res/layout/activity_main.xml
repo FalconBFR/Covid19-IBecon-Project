@@ -31,7 +31,7 @@
         android:id="@+id/dbupdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="164dp"
+        android:layout_marginStart="204dp"
         android:layout_marginTop="124dp"
         android:text="@string/AllDetectedBeacons"
         app:layout_constraintStart_toStartOf="parent"
