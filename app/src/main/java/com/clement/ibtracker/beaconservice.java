@@ -364,7 +364,7 @@ public class beaconservice extends Service implements BeaconConsumer {
 
         //for testing purposes only
         //
-        sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
+        //sqLiteDatabase.execSQL("DROP TABLE IF EXISTS contacts;");
         //
         //
 
