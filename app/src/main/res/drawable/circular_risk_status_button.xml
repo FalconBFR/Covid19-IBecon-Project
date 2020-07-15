@@ -3,5 +3,5 @@
     <size android:height="300dp" android:width="300dp"/>
     <solid android:color="#4CD631"/>
 
-    <corners android:radius="150dp"/>
+    <corners android:radius="175dp"/>
 </shape>
