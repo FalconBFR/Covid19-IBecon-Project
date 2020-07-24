@@ -45,6 +45,7 @@
         android:layout_marginTop="260dp"
         android:background="@drawable/circular_risk_status_button"
         android:text="@string/CloseContactBeacons"
+        android:textSize="24sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

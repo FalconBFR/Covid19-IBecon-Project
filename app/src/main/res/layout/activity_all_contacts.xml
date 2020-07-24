@@ -8,11 +8,11 @@
     android:id="@+id/all_contacts_parent_layout">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_width="402dp"
-        android:layout_height="616dp"
+        android:id="@+id/all_contacts_recycler_view"
+        android:layout_width="366dp"
+        android:layout_height="617dp"
         android:layout_marginTop="76dp"
         android:layout_marginBottom="39dp"
-        android:id="@+id/all_contacts_recycler_view"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.444"
