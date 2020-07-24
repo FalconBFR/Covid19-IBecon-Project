@@ -44,7 +44,7 @@ public class all_contacts_RecyclerViewAdapter extends RecyclerView.Adapter<all_c
         Log.d(TAG,"OnBindViewHolder called - new item added to Recycler View (all contacts)");
         Log.d(TAG,"mContactInfo array =" + mContact_info);
         holder.uuid.setText(mContact_info.get(position).UUID);
-        holder.Total_ContactLength.setText(mContact_info.get(position).TimeInContact.toString() + "minutes"); //setText only accepts string
+        holder.Total_ContactLength.setText("for "+ mContact_info.get(position).TimeInContact.toString() + " minutes"); //setText only accepts string
         holder.LastContactDate.setText(mContact_info.get(position).Date_time_last_Contact);
         /*holder.parent_layout.setOnClickListener(new View.OnClickListener() { //todo:add back later since it just says invoke virtual method and I have no time to solve it right now July 14
             @Override

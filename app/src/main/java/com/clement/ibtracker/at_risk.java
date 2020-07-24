@@ -35,7 +35,7 @@ public class at_risk extends AppCompatActivity {
     }
 
     public void loadillclosecontactsview(Context context) {
-        StringBuilder datainstr = new StringBuilder("ILL Close Contacts Table \n : Beaconid ");
+        StringBuilder datainstr = new StringBuilder("List of Close Contacts who are infected with Covid-19");
         System.out.println("loadingillclose");
 
         try {

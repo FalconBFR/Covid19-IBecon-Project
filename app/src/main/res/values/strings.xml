@@ -4,7 +4,7 @@
     <string name="servicerunning">Clement\'s Beacon </string>
     <string name="local_service_started">Recording your close contacts</string>
     <string name="servicerunningnote">Detecting your close contacts</string>
-    <string name="CloseContactBeacons">Are You At Risk 感染風險</string>
+    <string name="CloseContactBeacons">No Risk Detected \n 未偵測到感染風險</string>
     <string name="AllDetectedBeacons">All Detected Contacts 所有偵測到的接觸</string>
     <string name="Cannotuuidnew">Please ensure that you have internet connection to get your unique ID, alternatively, the server is down. This process is not replacable and the app will not run without this setup procedure. Internet connection is NOT NEEDED after inital setup. Sorry for the inconvenience caused.</string>
 </resources>
