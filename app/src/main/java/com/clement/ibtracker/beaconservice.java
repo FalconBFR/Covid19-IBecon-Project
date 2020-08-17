@@ -81,6 +81,8 @@ public class beaconservice extends Service implements BeaconConsumer {
     final String BEACONIDTXT = "beaconid.txt";
     EditText mEditText;
 
+
+
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
