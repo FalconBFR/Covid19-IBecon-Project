@@ -1,4 +1,4 @@
-# Covid19-IBecon-Project
+# Covid19-IBeacon-Project
 # Project Summary
 In early Febuary 2020, 14 year old me had the original idea of using the Bluetooth module on everyone's mobile phone to emulate the functionality of a Bluetooth IBeacon transmitter and reciever to keep track of all close contacts and alert citizens of possible transmissions at the first instance in a privacy centric and hassle free manner. As I spent the next 4 months learning how to create both Android and IOS mobile apps and working on a fully functional prototype*, experts from some countries like Singapore and the UK later came up with and implemented the same idea sucessfully. Apple and Google also developed the Exposure Notification API in April 2020, adopting the same technology and a similar privacy centric system architecture. This implementation was then proposed to the government in July 2020. Ultimately, due to various factors/considerations, the HKSAR government chose another implementation involving scanning QR Codes at venues (Leave Home Safe).
 
